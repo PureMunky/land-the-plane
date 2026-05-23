@@ -148,7 +148,9 @@ def clean_for_tts(text: str) -> str:
 
 
 def synth_paragraph(text: str, out_path: Path) -> None:
-    """Run Piper on a single paragraph, writing to out_path."""
+    """Run Piper on a single paragraph, writing to out_path. Sanity-checks
+    the resulting amplitude so a future Piper bug or a misconfigured flag
+    can't silently produce overdriven static. See validate_segment()."""
     cmd = [
         "piper",
         "-m", str(VOICE_MODEL),
@@ -167,6 +169,50 @@ def synth_paragraph(text: str, out_path: Path) -> None:
             f"piper failed (exit {proc.returncode})\n"
             f"stderr: {proc.stderr.strip()}\n"
             f"input:  {text[:120]}..."
+        )
+    validate_segment(out_path, text)
+
+
+# Sanity thresholds for a freshly-synthesised segment. Normal Piper
+# speech has RMS ~3000-7000 and clipping well under 0.1%. Known bug:
+# certain SENTENCE_SILENCE values (0.45, 0.55 in piper-tts 1.x) push
+# RMS to ~17000 and clipping to ~6%, producing audible static
+# throughout the audio. These thresholds catch that and similar future
+# regressions early.
+RMS_MAX = 11000
+CLIP_RATE_MAX = 0.02         # 2% of samples at |value| > 30000
+CLIP_ABS_THRESHOLD = 30000
+
+
+def validate_segment(wav_path: Path, text: str) -> None:
+    """Raise a RuntimeError if a Piper segment looks overdriven or
+    saturated. Cheap to run; reads the file once."""
+    with wave.open(str(wav_path), "rb") as w:
+        n = w.getnframes()
+        raw = w.readframes(n)
+    if n == 0:
+        raise RuntimeError(f"piper produced empty audio for: {text[:80]!r}")
+    samples = struct.unpack(f"<{n}h", raw)
+    rms = int((sum(s * s for s in samples) / n) ** 0.5)
+    clipped = sum(1 for s in samples if abs(s) > CLIP_ABS_THRESHOLD)
+    clip_rate = clipped / n
+    if rms > RMS_MAX or clip_rate > CLIP_RATE_MAX:
+        wav_path.unlink(missing_ok=True)
+        raise RuntimeError(
+            "Synthesised audio looks overdriven — likely a Piper bug or a "
+            "misconfigured synthesis flag.\n"
+            f"  file:       {wav_path}\n"
+            f"  text:       {text[:80]!r}\n"
+            f"  rms:        {rms} (max allowed: {RMS_MAX})\n"
+            f"  clip rate:  {clip_rate * 100:.2f}% "
+            f"(max allowed: {CLIP_RATE_MAX * 100:.1f}%)\n"
+            "\n"
+            "Known cause: piper-tts 1.x has a bug where certain "
+            "--sentence-silence values (0.45 and 0.55 both reproduce it) "
+            "drive output amplitude ~3x normal and clip 6%+ of samples. "
+            f"Current SENTENCE_SILENCE = {SENTENCE_SILENCE}. Try 0.4 or "
+            "0.5 (effectively the same pause length, both verified clean) "
+            "and re-render with --clean."
         )
 
 
