@@ -9,14 +9,14 @@ load-bearing in a way they never were before — capturing intent
 explicitly, refusing to pay the cargo cult tax, and treating
 psychological safety as a throughput argument rather than a soft skill.
 **Target length:** ~30 minutes (~5,200 words at solo pacing).
-**Voice:** Host of Claude Cast — first person, opinionated essay format,
+**Voice:** Host of Land the Plane — first person, opinionated essay format,
 weekly cadence with a news segment up top.
 
 ---
 
 ## Show open
 
-Welcome to Claude Cast. This is your weekly half hour about software
+Welcome to Land the Plane. This is your weekly half hour about software
 engineering, AI-assisted development, and what it actually takes to
 lead engineering teams in twenty twenty-six. I am your host. This is
 episode one. Thanks for being here.
@@ -547,7 +547,7 @@ Land the plane.
 
 ## Sign-off
 
-That is episode one of Claude Cast. If any of this resonated — or if
+That is episode one of Land the Plane. If any of this resonated — or if
 any of it made you mad — both are useful signals. The way to find us
 next week is the same way you found us this week. Subscribe in whatever
 podcast app you are using. Tell one other person who works in
@@ -562,4 +562,4 @@ to walk through it.
 Until then. Capture intent. Validate honestly. Name your theater. And
 keep the planes landing.
 
-Thanks for listening. This has been Claude Cast.
+Thanks for listening. This has been Land the Plane.

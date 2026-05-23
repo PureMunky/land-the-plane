@@ -1,7 +1,7 @@
 # Draft prompt
 
 Use this prompt to turn the research brief + `philosophies.md` into a
-draft `script.md` and `post.md` for a Claude Cast episode.
+draft `script.md` and `post.md` for a Land the Plane episode.
 
 Drop it into any frontier LLM with file access (Claude Code, Codex,
 etc.) after putting the research brief at
@@ -11,7 +11,7 @@ etc.) after putting the research brief at
 
 ## Prompt
 
-You are drafting episode `<NNN>` of Claude Cast. The slug is
+You are drafting episode `<NNN>` of Land the Plane. The slug is
 `<slug>`. The publish date is `<YYYY-MM-DD>`.
 
 Before you write a word, read these three files end to end:
@@ -64,7 +64,7 @@ Required structure (top to bottom):
    if you can.
 
 7. **Sign-off** — `## Sign-off`. ~100 words. Tease next week if you
-   have a thread; end with "This has been Claude Cast."
+   have a thread; end with "This has been Land the Plane."
 
 **TTS conventions to follow throughout the script:**
 

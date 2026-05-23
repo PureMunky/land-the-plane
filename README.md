@@ -1,4 +1,12 @@
-# Claude Cast
+# Land the Plane
+
+> ⚠️ **Experimental project.** Land the Plane is an in-progress
+> experiment in producing a weekly podcast end-to-end through an AI
+> pipeline — research, drafting, audio synthesis, and publishing all
+> run through Claude Code and Piper TTS. The voice is synthetic.
+> Treat any episode as a working draft of an argument, not as
+> authoritative reporting. The GitHub repo is still named
+> `claude-cast` for historical reasons.
 
 A weekly podcast about software engineering, AI-assisted development,
 and engineering leadership in the agentic era. Each episode is a solo

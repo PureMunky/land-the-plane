@@ -42,21 +42,30 @@ BASE_URL = os.environ.get(
 ).rstrip("/")
 
 SHOW = {
-    "title": "Claude Cast",
+    "title": "Land the Plane",
     "tagline": "Software engineering, AI-assisted development, and what it "
                "actually takes to lead engineering teams in the agentic era.",
     "description": (
         "A weekly half-hour about software engineering, AI-assisted "
         "development, and engineering leadership. Each episode pairs a "
         "current-events segment with one longer essay-style argument and "
-        "one or two things you can actually do this week."
+        "one or two things you can actually do this week. "
+        "Experimental: every episode is researched, drafted, and "
+        "audio-rendered end-to-end through an AI pipeline, with a "
+        "synthetic voice (Piper TTS). Treat episodes as working drafts."
+    ),
+    "experimental_notice": (
+        "Every episode is researched, drafted, and audio-rendered "
+        "end-to-end through an AI pipeline. The voice is synthetic "
+        "(Piper TTS). Treat episodes as working drafts of an argument, "
+        "not authoritative reporting."
     ),
     "language": "en-us",
-    "author": "Claude Cast",
+    "author": "Land the Plane",
     "email": "noreply@example.com",  # iTunes requires a value here
     "category": "Technology",
     "explicit": "false",
-    "copyright": f"© {datetime.now(timezone.utc).year} Claude Cast",
+    "copyright": f"© {datetime.now(timezone.utc).year} Land the Plane",
 }
 
 STYLE_CSS = """
@@ -85,7 +94,17 @@ a:hover { color: var(--accent); }
 .site-header img { width: 64px; height: 64px; border-radius: 12px; }
 .site-header h1 { font-size: 24px; margin: 0; letter-spacing: -0.01em; }
 .site-header a { color: var(--text); text-decoration: none; }
-.site-tagline { color: var(--muted); margin: 4px 0 32px; }
+.site-tagline { color: var(--muted); margin: 4px 0 16px; }
+.experiment-notice {
+  background: rgba(199, 128, 255, 0.08);
+  border: 1px solid rgba(199, 128, 255, 0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--muted);
+  margin: 16px 0 24px;
+}
+.experiment-notice strong { color: var(--accent); }
 .nav-links { margin: 8px 0 40px; display: flex; gap: 16px; font-size: 14px; }
 .nav-links a { color: var(--muted); text-decoration: none; }
 .nav-links a:hover { color: var(--accent); }
@@ -178,7 +197,7 @@ def render_layout(title: str, body: str, *, is_root: bool = False) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
 <link rel="stylesheet" href="{'./style.css' if is_root else '../../style.css'}">
-<link rel="alternate" type="application/rss+xml" title="Claude Cast" href="{feed_href}">
+<link rel="alternate" type="application/rss+xml" title="Land the Plane" href="{feed_href}">
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{BASE_URL}/cover.png">
@@ -190,6 +209,9 @@ def render_layout(title: str, body: str, *, is_root: bool = False) -> str:
 <a href="{home_href}"><h1>{SHOW['title']}</h1></a>
 </header>
 <p class="site-tagline">{html.escape(SHOW['tagline'])}</p>
+<aside class="experiment-notice">
+<strong>Experimental.</strong> {html.escape(SHOW['experimental_notice'])}
+</aside>
 <nav class="nav-links">
   <a href="{home_href}">Episodes</a>
   <a href="{feed_href}">RSS</a>
@@ -197,8 +219,9 @@ def render_layout(title: str, body: str, *, is_root: bool = False) -> str:
 </nav>
 {body}
 <footer>
-<p>Claude Cast is rendered with local TTS from
-<a href="https://github.com/puremunky/claude-cast">this open repo</a>.
+<p>Land the Plane is rendered with local TTS from
+<a href="https://github.com/puremunky/claude-cast">this open repo</a>
+(named <code>claude-cast</code> for historical reasons).
 Subscribe in any podcast app via <a href="{feed_href}">the RSS feed</a>.</p>
 </footer>
 </div>
@@ -294,7 +317,7 @@ def render_rss(episodes: list[dict]) -> str:
         items.append(f"""    <item>
       <title>{xml_escape(ep.get('title', ''))}</title>
       <link>{xml_escape(ep_url)}</link>
-      <guid isPermaLink="false">claude-cast-{ep.get('number', 0):03d}</guid>
+      <guid isPermaLink="false">land-the-plane-{ep.get('number', 0):03d}</guid>
       <pubDate>{pub_rfc}</pubDate>
       <description>{xml_escape(ep.get('summary', ''))}</description>
       <content:encoded><![CDATA[{post_html}]]></content:encoded>

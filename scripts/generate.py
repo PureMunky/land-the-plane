@@ -17,6 +17,7 @@ sections.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -172,38 +173,37 @@ def silence_wav(out_path: Path, duration_s: float, sample_rate: int = 22050) -> 
 
 
 def concat_wavs(inputs: list[Path], out_path: Path) -> None:
-    """Concatenate wavs with ffmpeg's concat demuxer (re-encodes to mp3-quality
-    WAV at the input sample rate)."""
-    listfile = out_path.with_suffix(".concat.txt")
-    with listfile.open("w") as f:
+    """Concatenate mono PCM WAVs by reading their frames and writing one
+    output. Doing this through Python's wave module rather than
+    `ffmpeg -f concat -c copy` avoids embedding each input's RIFF/WAVE
+    header into the output stream — those header bytes were getting
+    decoded as audio samples and producing static at paragraph boundaries
+    in earlier renders."""
+    if not inputs:
+        raise ValueError("no input wavs to concat")
+
+    with wave.open(str(inputs[0]), "rb") as first:
+        sample_rate = first.getframerate()
+        nchannels = first.getnchannels()
+        sampwidth = first.getsampwidth()
+
+    with wave.open(str(out_path), "wb") as out:
+        out.setnchannels(nchannels)
+        out.setsampwidth(sampwidth)
+        out.setframerate(sample_rate)
         for p in inputs:
-            f.write(f"file '{p.resolve()}'\n")
-    cmd = [
-        "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-        "-f", "concat", "-safe", "0",
-        "-i", str(listfile),
-        "-c", "copy",
-        str(out_path),
-    ]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
-    if proc.returncode != 0:
-        # If concat -c copy fails (sample-rate mismatch etc.), fall back to
-        # re-encoding.
-        cmd_reencode = [
-            "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-            "-f", "concat", "-safe", "0",
-            "-i", str(listfile),
-            "-ar", "22050", "-ac", "1",
-            str(out_path),
-        ]
-        proc2 = subprocess.run(cmd_reencode, capture_output=True, text=True)
-        if proc2.returncode != 0:
-            raise RuntimeError(
-                f"ffmpeg concat failed\n"
-                f"copy stderr:    {proc.stderr.strip()}\n"
-                f"reencode stderr: {proc2.stderr.strip()}"
-            )
-    listfile.unlink(missing_ok=True)
+            with wave.open(str(p), "rb") as w:
+                if (w.getframerate() != sample_rate
+                        or w.getnchannels() != nchannels
+                        or w.getsampwidth() != sampwidth):
+                    raise RuntimeError(
+                        f"WAV format mismatch in {p}: "
+                        f"{w.getframerate()}Hz/{w.getnchannels()}ch/"
+                        f"{w.getsampwidth() * 8}bit (expected "
+                        f"{sample_rate}Hz/{nchannels}ch/{sampwidth * 8}bit). "
+                        f"Delete segments/ and re-render to reset."
+                    )
+                out.writeframes(w.readframes(w.getnframes()))
 
 
 def wav_duration(path: Path) -> float:
@@ -255,6 +255,17 @@ def main() -> int:
     silence_wav(paragraph_silence, PARAGRAPH_SILENCE)
     silence_wav(section_silence, SECTION_SILENCE)
 
+    # Hash-based segment cache: each chunk's synth is keyed on the sha1 of
+    # its cleaned text, so editing one paragraph only re-synths that
+    # paragraph instead of the whole episode.
+    manifest_path = segments_dir / "manifest.json"
+    manifest: dict[str, str] = {}
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text())
+        except json.JSONDecodeError:
+            manifest = {}
+
     timeline: list[Path] = []
     speech_idx = 0
     for i, chunk in enumerate(chunks):
@@ -262,10 +273,21 @@ def main() -> int:
             timeline.append(section_silence)
             continue
 
-        seg_path = segments_dir / f"{speech_idx:04d}.wav"
-        print(f"  [{speech_idx:04d}] synth ({len(chunk['text'].split())} words): "
-              f"{chunk['text'][:60]}...")
-        synth_paragraph(chunk["text"], seg_path)
+        seg_key = f"{speech_idx:04d}"
+        seg_path = segments_dir / f"{seg_key}.wav"
+        text_hash = hashlib.sha1(chunk["text"].encode("utf-8")).hexdigest()[:12]
+        cached = (
+            manifest.get(seg_key) == text_hash
+            and seg_path.exists()
+            and seg_path.stat().st_size > 44
+        )
+        if cached:
+            print(f"  [{seg_key}] cached: {chunk['text'][:60]}...")
+        else:
+            print(f"  [{seg_key}] synth ({len(chunk['text'].split())} "
+                  f"words): {chunk['text'][:60]}...")
+            synth_paragraph(chunk["text"], seg_path)
+            manifest[seg_key] = text_hash
         timeline.append(seg_path)
 
         # Add a short pause unless the next chunk is a section break
@@ -276,6 +298,10 @@ def main() -> int:
         if not next_is_break and not is_last:
             timeline.append(paragraph_silence)
         speech_idx += 1
+
+    if args.preview is None:
+        manifest_path.write_text(json.dumps(manifest, indent=2) + "\n",
+                                 encoding="utf-8")
 
     wav_name = "preview.wav" if args.preview is not None else "episode.wav"
     wav_path = episode_dir / wav_name

@@ -2,14 +2,14 @@
 
 **Subtitle:** One line of what this episode argues.
 **Target length:** ~30 minutes (~5,000 words at solo pacing).
-**Voice:** Host of Claude Cast — first person, opinionated, weekly cadence
+**Voice:** Host of Land the Plane — first person, opinionated, weekly cadence
 with a news segment up top.
 
 ---
 
 ## Show open
 
-Welcome to Claude Cast. This is your weekly half hour about software
+Welcome to Land the Plane. This is your weekly half hour about software
 engineering, AI-assisted development, and what it actually takes to
 lead engineering teams in the agentic era. I am your host. This is
 episode NNN.
@@ -51,9 +51,9 @@ the cold open if you can. ~400-500 words.]
 
 ## Sign-off
 
-That is episode NNN of Claude Cast. Subscribe wherever you get
+That is episode NNN of Land the Plane. Subscribe wherever you get
 podcasts. Tell one other person who works in engineering.
 
 Next week, [tease].
 
-Thanks for listening. This has been Claude Cast.
+Thanks for listening. This has been Land the Plane.

@@ -3,7 +3,7 @@ description: Scaffold a new episode directory from the template
 argument-hint: <number> <slug>
 ---
 
-Scaffold a new episode for Claude Cast.
+Scaffold a new episode for Land the Plane.
 
 Arguments: `$ARGUMENTS` — expect `<number> <slug>`, e.g. `002 new-code-review`.
 
