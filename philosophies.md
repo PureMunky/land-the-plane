@@ -3,6 +3,15 @@
 This file is the canonical context any episode draws from. Update it when
 your thinking shifts; the next script pass will pull from this version.
 
+## What this is
+
+**Land the Plane** is an experimental, AI-produced podcast about
+software engineering, AI-assisted development, and engineering
+leadership in the agentic era. Research, drafting, audio synthesis,
+and publishing all run through an AI pipeline. The voice is synthetic
+(Piper TTS). Episodes are working drafts of an argument, not
+authoritative reporting.
+
 ## Show positioning
 - Weekly podcast (~30 minutes) about software engineering, AI-assisted
   development, and what it actually takes to lead engineering teams in

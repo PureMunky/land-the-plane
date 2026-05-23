@@ -17,6 +17,7 @@ sections.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -254,6 +255,17 @@ def main() -> int:
     silence_wav(paragraph_silence, PARAGRAPH_SILENCE)
     silence_wav(section_silence, SECTION_SILENCE)
 
+    # Hash-based segment cache: each chunk's synth is keyed on the sha1 of
+    # its cleaned text, so editing one paragraph only re-synths that
+    # paragraph instead of the whole episode.
+    manifest_path = segments_dir / "manifest.json"
+    manifest: dict[str, str] = {}
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text())
+        except json.JSONDecodeError:
+            manifest = {}
+
     timeline: list[Path] = []
     speech_idx = 0
     for i, chunk in enumerate(chunks):
@@ -261,13 +273,21 @@ def main() -> int:
             timeline.append(section_silence)
             continue
 
-        seg_path = segments_dir / f"{speech_idx:04d}.wav"
-        if seg_path.exists() and seg_path.stat().st_size > 44:
-            print(f"  [{speech_idx:04d}] cached: {chunk['text'][:60]}...")
+        seg_key = f"{speech_idx:04d}"
+        seg_path = segments_dir / f"{seg_key}.wav"
+        text_hash = hashlib.sha1(chunk["text"].encode("utf-8")).hexdigest()[:12]
+        cached = (
+            manifest.get(seg_key) == text_hash
+            and seg_path.exists()
+            and seg_path.stat().st_size > 44
+        )
+        if cached:
+            print(f"  [{seg_key}] cached: {chunk['text'][:60]}...")
         else:
-            print(f"  [{speech_idx:04d}] synth ({len(chunk['text'].split())} "
+            print(f"  [{seg_key}] synth ({len(chunk['text'].split())} "
                   f"words): {chunk['text'][:60]}...")
             synth_paragraph(chunk["text"], seg_path)
+            manifest[seg_key] = text_hash
         timeline.append(seg_path)
 
         # Add a short pause unless the next chunk is a section break
@@ -278,6 +298,10 @@ def main() -> int:
         if not next_is_break and not is_last:
             timeline.append(paragraph_silence)
         speech_idx += 1
+
+    if args.preview is None:
+        manifest_path.write_text(json.dumps(manifest, indent=2) + "\n",
+                                 encoding="utf-8")
 
     wav_name = "preview.wav" if args.preview is not None else "episode.wav"
     wav_path = episode_dir / wav_name

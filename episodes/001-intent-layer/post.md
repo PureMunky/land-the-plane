@@ -3,7 +3,7 @@
 *Intent, agents, and the coming reshape of engineering work.*
 
 *Published 2026-05-23. The audio version of this piece is
-[Claude Cast episode 1](./episode.mp3); this post covers the same
+[Land the Plane episode 1](./episode.mp3); this post covers the same
 ground for people who'd rather read.*
 
 ---

@@ -1,4 +1,4 @@
-# Claude Cast — project context
+# Land the Plane — project context
 
 This file is read automatically by Claude Code at the start of any
 session in this repo. It is the orientation any agent needs before
@@ -6,7 +6,7 @@ touching content or running the pipeline.
 
 ## What this repo is
 
-Claude Cast is a weekly solo half-hour podcast about software
+Land the Plane is a weekly solo half-hour podcast about software
 engineering, AI-assisted development, and engineering leadership in
 the agentic era. Every episode ships as both audio (rendered locally
 with Piper TTS) and a written blog post (rendered to the GitHub Pages

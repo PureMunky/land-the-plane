@@ -4,17 +4,17 @@
      xmlns:content="http://purl.org/rss/1.0/modules/content/"
      xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Claude Cast</title>
+    <title>Land the Plane</title>
     <link>https://puremunky.github.io/claude-cast</link>
     <atom:link href="https://puremunky.github.io/claude-cast/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
-    <copyright>© 2026 Claude Cast</copyright>
-    <description>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week.</description>
-    <lastBuildDate>Sat, 23 May 2026 13:59:14 +0000</lastBuildDate>
-    <itunes:author>Claude Cast</itunes:author>
-    <itunes:summary>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week.</itunes:summary>
+    <copyright>© 2026 Land the Plane</copyright>
+    <description>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</description>
+    <lastBuildDate>Sat, 23 May 2026 14:07:27 +0000</lastBuildDate>
+    <itunes:author>Land the Plane</itunes:author>
+    <itunes:summary>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</itunes:summary>
     <itunes:owner>
-      <itunes:name>Claude Cast</itunes:name>
+      <itunes:name>Land the Plane</itunes:name>
       <itunes:email>noreply@example.com</itunes:email>
     </itunes:owner>
     <itunes:image href="https://puremunky.github.io/claude-cast/cover.png"/>
@@ -23,13 +23,13 @@
     <item>
       <title>When the Planes Don't Land</title>
       <link>https://puremunky.github.io/claude-cast/episodes/001-intent-layer/</link>
-      <guid isPermaLink="false">claude-cast-001</guid>
+      <guid isPermaLink="false">land-the-plane-001</guid>
       <pubDate>Sat, 23 May 2026 00:00:00 +0000</pubDate>
       <description>Karpathy moves to Anthropic, GitHub Spec Kit reframes the source of truth, and Thoughtworks warns about cognitive debt. The main piece argues that as agents take over the typing, three things get load-bearing in a way they never were before — capturing intent explicitly, refusing to pay the cargo cult tax, and treating psychological safety as a throughput argument rather than a soft skill.</description>
       <content:encoded><![CDATA[<h1>When the Planes Don&rsquo;t Land</h1>
 <p><em>Intent, agents, and the coming reshape of engineering work.</em></p>
 <p><em>Published 2026-05-23. The audio version of this piece is
-<a href="./episode.mp3">Claude Cast episode 1</a>; this post covers the same
+<a href="./episode.mp3">Land the Plane episode 1</a>; this post covers the same
 ground for people who&rsquo;d rather read.</em></p>
 <hr />
 <h2>This week on the radar</h2>
@@ -433,10 +433,10 @@ widest it&rsquo;s ever been.</p>
 <li>Mike Hadlow, &ldquo;Coconut Headphones: Why Agile Has Failed&rdquo; (2014): <a href="http://mikehadlow.blogspot.com/2014/03/coconut-headphones-why-agile-has-failed.html">http://mikehadlow.blogspot.com/2014/03/coconut-headphones-why-agile-has-failed.html</a></li>
 <li>John Frum movement background: <a href="https://en.wikipedia.org/wiki/John_Frum">https://en.wikipedia.org/wiki/John_Frum</a></li>
 </ul>]]></content:encoded>
-      <enclosure url="https://puremunky.github.io/claude-cast/episodes/001-intent-layer/episode.mp3" length="19793129" type="audio/mpeg"/>
-      <itunes:duration>27:29</itunes:duration>
+      <enclosure url="https://puremunky.github.io/claude-cast/episodes/001-intent-layer/episode.mp3" length="19943594" type="audio/mpeg"/>
+      <itunes:duration>27:42</itunes:duration>
       <itunes:explicit>false</itunes:explicit>
-      <itunes:author>Claude Cast</itunes:author>
+      <itunes:author>Land the Plane</itunes:author>
       <itunes:subtitle>Intent, agents, and the coming reshape of engineering work.</itunes:subtitle>
       <itunes:summary>Karpathy moves to Anthropic, GitHub Spec Kit reframes the source of truth, and Thoughtworks warns about cognitive debt. The main piece argues that as agents take over the typing, three things get load-bearing in a way they never were before — capturing intent explicitly, refusing to pay the cargo cult tax, and treating psychological safety as a throughput argument rather than a soft skill.</itunes:summary>
     </item>

@@ -1,4 +1,4 @@
-# Episodes index
+# Land the Plane — episodes index
 
 Topic and angle of every published episode. Check this before
 proposing a new topic to avoid accidental repeats (or to deliberately

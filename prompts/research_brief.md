@@ -1,6 +1,6 @@
 # Research brief prompt
 
-Use this prompt to produce a sourced research brief for a Claude Cast
+Use this prompt to produce a sourced research brief for a Land the Plane
 episode. The output of this prompt is the input to
 `prompts/draft_script.md`.
 
@@ -14,7 +14,7 @@ revision) can refer back to it.
 ## Prompt
 
 I am writing a 30-minute solo-host podcast episode for a show called
-Claude Cast. The show is about software engineering, AI-assisted
+Land the Plane. The show is about software engineering, AI-assisted
 development, and engineering leadership in the agentic era — written
 for working engineers and engineering managers. Voice is opinionated,
 plain-spoken, allergic to corporate-generic language.

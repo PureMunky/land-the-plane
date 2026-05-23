@@ -42,19 +42,19 @@ def main() -> None:
             fill=(120 - alpha // 3, 60 + alpha // 4, 200 - alpha // 2),
         )
 
-    title = "claude\ncast"
-    subtitle = "engineering in the agentic era"
+    title = "land\nthe\nplane"
+    subtitle = "engineering in the agentic era · experimental"
 
-    title_font = find_font(360)
-    sub_font = find_font(56)
+    title_font = find_font(320)
+    sub_font = find_font(40)
 
-    # Title
+    # Title — three short lines, left-aligned
     draw.multiline_text(
-        (110, 360),
+        (110, 200),
         title,
         font=title_font,
         fill=(240, 240, 250),
-        spacing=20,
+        spacing=10,
     )
 
     # Subtitle
@@ -66,7 +66,7 @@ def main() -> None:
     )
 
     # A thin underline accent
-    draw.rectangle((114, 1320, 480, 1330), fill=(200, 120, 255))
+    draw.rectangle((114, 1310, 480, 1320), fill=(200, 120, 255))
 
     img.save(OUT, "PNG", optimize=True)
     print(f"Wrote {OUT} ({OUT.stat().st_size // 1024} KB)")

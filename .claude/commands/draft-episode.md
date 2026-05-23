@@ -3,7 +3,7 @@ description: Research a topic and draft the script + blog post for an episode
 argument-hint: <episode-slug> "<topic and angle>"
 ---
 
-Draft a full Claude Cast episode (script + blog post) on the topic
+Draft a full Land the Plane episode (script + blog post) on the topic
 the user has supplied.
 
 Arguments: `$ARGUMENTS` — expect `<episode-slug>` (e.g. `002-new-code-review`)
