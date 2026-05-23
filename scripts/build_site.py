@@ -38,7 +38,7 @@ DOCS_DIR = ROOT / "docs"
 
 # Override at build time: BASE_URL=https://example.com/foo python scripts/build_site.py
 BASE_URL = os.environ.get(
-    "BASE_URL", "https://puremunky.github.io/claude-cast"
+    "BASE_URL", "https://puremunky.github.io/land-the-plane"
 ).rstrip("/")
 
 SHOW = {
@@ -215,13 +215,12 @@ def render_layout(title: str, body: str, *, is_root: bool = False) -> str:
 <nav class="nav-links">
   <a href="{home_href}">Episodes</a>
   <a href="{feed_href}">RSS</a>
-  <a href="https://github.com/puremunky/claude-cast">GitHub</a>
+  <a href="https://github.com/puremunky/land-the-plane">GitHub</a>
 </nav>
 {body}
 <footer>
 <p>Land the Plane is rendered with local TTS from
-<a href="https://github.com/puremunky/claude-cast">this open repo</a>
-(named <code>claude-cast</code> for historical reasons).
+<a href="https://github.com/puremunky/land-the-plane">this open repo</a>.
 Subscribe in any podcast app via <a href="{feed_href}">the RSS feed</a>.</p>
 </footer>
 </div>
