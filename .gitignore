@@ -1,0 +1,25 @@
+# Voice models are large (~70MB) and reproducible via scripts/install_voice.sh
+voices/*.onnx
+voices/*.onnx.json
+voices/MODEL_CARD
+voices/*.tar.gz
+
+# Per-paragraph intermediate WAVs — kept on disk for incremental re-rendering
+# but not worth versioning. The final episode.mp3 (committed) is the
+# distribution artifact.
+episodes/*/segments/
+
+# Uncompressed intermediate audio. The MP3 in the same directory is what
+# we publish; the WAV is a 70MB intermediate not worth versioning.
+episodes/*/episode.wav
+episodes/*/preview.wav
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# OS
+.DS_Store

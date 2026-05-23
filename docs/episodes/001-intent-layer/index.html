@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>When the Planes Don&#x27;t Land — Claude Cast</title>
+<link rel="stylesheet" href="../../style.css">
+<link rel="alternate" type="application/rss+xml" title="Claude Cast" href="../../feed.xml">
+<meta property="og:title" content="When the Planes Don&#x27;t Land — Claude Cast">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://puremunky.github.io/claude-cast/cover.png">
+</head>
+<body>
+<div class="container">
+<header class="site-header">
+<a href="../../"><img src="../../cover.png" alt=""></a>
+<a href="../../"><h1>Claude Cast</h1></a>
+</header>
+<p class="site-tagline">Software engineering, AI-assisted development, and what it actually takes to lead engineering teams in the agentic era.</p>
+<nav class="nav-links">
+  <a href="../../">Episodes</a>
+  <a href="../../feed.xml">RSS</a>
+  <a href="https://github.com/puremunky/claude-cast">GitHub</a>
+</nav>
+
+<p class="episode-meta">Episode 001 ·
+2026-05-23 ·
+27:16</p>
+<audio controls preload="metadata" src="./episode.mp3"></audio>
+<article>
+<h1>When the Planes Don&rsquo;t Land</h1>
+<p><em>Intent, agents, and the coming reshape of engineering work.</em></p>
+<p><em>Published 2026-05-23. The audio version of this piece is
+<a href="./episode.mp3">Claude Cast episode 1</a>; this post covers the same
+ground for people who&rsquo;d rather read.</em></p>
+<hr />
+<h2>This week on the radar</h2>
+<p>Four things from the last little while.</p>
+<p><strong>Karpathy joins Anthropic.</strong> Andrej Karpathy — who in
+<a href="https://x.com/karpathy/status/1886192184808149383">February 2025</a>
+posted the tweet that named &ldquo;vibe coding,&rdquo; and who was one of the
+founding members of OpenAI — joined Anthropic in May. Fortune broke
+the story on the <a href="https://fortune.com/2026/05/19/who-is-andrej-karpathy-vibe-coding-anthropic-openai-rubiks-cube/">19th</a>.
+The symbolic arc is the thing: the person who coined the loose,
+exuberant, no-code-review mode of working with language models has
+gone to the company building the most opinionated, most review-
+disciplined coding-agent product in the market. The center of gravity
+is moving toward agentic coding with more deliberate guardrails, not
+away from it.</p>
+<p><strong>Visual Studio Magazine on Spec Kit.</strong> On
+<a href="https://visualstudiomagazine.com/articles/2026/05/12/github-spec-kit-takes-off-as-antidote-to-piecemeal-vibe-coding.aspx">May 12</a>
+the magazine ran a piece on GitHub&rsquo;s open-source spec-driven
+development toolkit. The headline literally calls it &ldquo;an antidote to
+piecemeal vibe coding.&rdquo; The line at the heart of
+<a href="https://github.com/github/spec-kit">Spec Kit</a> is the one to
+internalize: <em>from &ldquo;code is the source of truth&rdquo; to &ldquo;intent is the
+source of truth.&rdquo;</em> It&rsquo;s the spine of everything that follows.</p>
+<p><strong>Thoughtworks Radar v34.</strong> Published in
+<a href="https://www.thoughtworks.com/about-us/news/2026/combat-ai-cognitive-debt-radar-v34">April 2026</a>,
+this is the most prominent institutional pushback. The phrase to
+remember is &ldquo;cognitive debt&rdquo; — the gap between the volume of code
+your team is producing with agents and the amount of that code your
+team actually understands. Their warning is sharp: &ldquo;coding agents
+will generate bad code and then use bad code to generate more bad
+code,&rdquo; and &ldquo;humans are dangerously tempted to step out of the loop.&rdquo;</p>
+<p><strong>Psychological safety eroding in AI-heavy teams.</strong> HBR
+<a href="https://hbr.org/2026/02/how-to-foster-psychological-safety-when-ai-erodes-trust-on-your-team">in February</a>
+and MIT Tech Review (late 2025) both published on something a lot of
+people have been seeing privately. ManpowerGroup put a number on it:
+AI usage at work up 13% year over year, employee confidence in the
+technology down 18%. People are using these tools more and trusting
+them less, and in a lot of orgs, saying that out loud feels like
+heresy.</p>
+<hr />
+<h2>The diff is not the artifact</h2>
+<p>Picture a scene a lot of you will recognize. It&rsquo;s a Tuesday afternoon.
+An engineer is sitting at a desk; on the main screen, a coding agent
+is working — refactoring a Kubernetes operator, reading files,
+proposing edits, running tests, reading the test output, proposing
+more edits. It&rsquo;s been about four minutes since the human typed
+anything. Once in a while a notification chirps. The agent has a
+question.</p>
+<p>In that pause, watching the machine work, there&rsquo;s a thought a lot of
+us have started to have.</p>
+<p><strong>The diff is not the artifact.</strong> The diff is the exhaust. The
+artifact is the conversation that produced it — the reasoning, the
+false starts, the moment the engineer said, <em>no, not like that, the
+controller has to be idempotent because we run it from a Tekton task
+that retries on failure</em>. That sentence — that piece of intent —
+never made it into the codebase. It got compressed into a few lines
+of Go and a comment that says &ldquo;idempotent,&rdquo; and the next person who
+reads that comment will have no idea why it matters.</p>
+<p>That&rsquo;s where this piece starts. The question that follows from this
+little moment is bigger than it looks. It&rsquo;s a question about what
+happens to software when agents do the typing and humans do the
+thinking — and about why most engineering organizations are about to
+discover, the hard way, that they&rsquo;ve been mistaking the shape of
+work for the substance of work for about a decade.</p>
+<h2>The Intent Layer</h2>
+<p><a href="https://simonwillison.net/2025/Mar/19/vibe-coding/">Simon Willison</a>
+has the cleanest line on Karpathy&rsquo;s coinage I&rsquo;ve read: &ldquo;I won&rsquo;t
+commit any code if I couldn&rsquo;t explain what it does to somebody else.
+If an LLM wrote the code but you then reviewed it, tested it
+thoroughly, and ensured you could explain how it works — that&rsquo;s
+software development, not vibe coding.&rdquo;</p>
+<p>The practical question that line raises is: where does the
+explanation live?</p>
+<p>If you&rsquo;re going to be able to explain what the code does and <em>why
+it&rsquo;s structured the way it is</em>, the explanation can&rsquo;t just live in
+your head. In three months you won&rsquo;t remember. In six months,
+somebody else will own the code and they certainly won&rsquo;t remember,
+because they were never there. The explanation has to live somewhere
+durable. And the places we usually put explanations — comments,
+commit messages, design docs — were designed for a world where a
+human typed the code. They&rsquo;re optimized for the assumption that the
+typist already understood it.</p>
+<p>That assumption is breaking.</p>
+<p>GitHub noticed. In late 2025 they released <a href="https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/">Spec
+Kit</a>,
+an open-source toolkit for spec-driven development. You write a
+specification first, then a plan, then tasks; then the agent codes.
+The tagline — <em>from &ldquo;code is the source of truth&rdquo; to &ldquo;intent is the
+source of truth&rdquo;</em> — is the thing to internalize. Specifications
+become first-class. Code is the last mile.</p>
+<p>But most of the coverage of Spec Kit misses what I think is the
+actual point. The specification isn&rsquo;t the goal. The specification is
+one snapshot of the intent. Intent itself is bigger: it includes the
+moment three days ago when you decided <em>against</em> a different design;
+the pivot you made at 3 PM yesterday because a stakeholder said
+something offhand in a meeting that turned out to be load-bearing;
+the thing you tried for an hour, that didn&rsquo;t work, that you
+abandoned and never wrote down — and which the next engineer is
+going to try again because there&rsquo;s no record that anyone has been
+down that path.</p>
+<p>A specification captures intent at a moment. <strong>The Intent Layer is
+the continuous record of intent across time.</strong></p>
+<p>People have started building personal versions of this. Call it a
+captain&rsquo;s log, an intent log, a decision journal — pick the name.
+The shape is the same: a thing that sits next to your agent sessions
+and captures the conversation — the prompts, the pivots, the
+reasoning — alongside the diffs. So when you look back at a feature,
+you don&rsquo;t just see what changed. You see what you were trying to do
+when you changed it.</p>
+<p>Steve Yegge — now at Sourcegraph, co-authoring a book on vibe coding
+with Gene Kim and Dario Amodei — has been building something similar
+he calls Beads: a lightweight, agent-readable decision and issue
+store. Different name, same shape. The whole industry is converging
+on the same recognition: <strong>when the typing gets cheap, the
+explaining gets expensive.</strong> The explaining is where the actual
+value lives.</p>
+<p>The internalization for engineering leaders is this. If your team is
+using agentic tools and you don&rsquo;t have any way to capture intent
+alongside the output, you&rsquo;re accumulating what Thoughtworks now calls
+<em>cognitive debt</em>. The first sign of it isn&rsquo;t a bug. The first sign
+is a meeting where nobody can answer the question, &ldquo;why did we do it
+this way?&rdquo;</p>
+<h2>The cargo cult tax</h2>
+<p>The title of this piece is &ldquo;When the Planes Don&rsquo;t Land,&rdquo; and the
+reference is the story everyone in engineering should know but a
+surprising number of people don&rsquo;t.</p>
+<p>In 1974, Richard Feynman gave the Caltech commencement address. He
+told a story about the cargo cults of the South Pacific. After World
+War II, American forces had built airstrips on Pacific islands,
+brought in massive amounts of equipment and supplies — <em>cargo</em> — and
+then left. The islanders, having watched all of this, did the
+reasonable thing: they built bamboo control towers, fake airstrips,
+<a href="https://en.wikipedia.org/wiki/John_Frum">coconut-shell headphones</a>.
+They made everything <em>look</em> exactly like what the Americans had been
+doing. And they waited for the planes to come back. The planes did
+not come back.</p>
+<p>Feynman&rsquo;s <a href="https://calteches.library.caltech.edu/51/2/CargoCult.pdf">point</a>:
+&ldquo;the first principle is that you must not fool yourself — and you
+are the easiest person to fool.&rdquo; His application was to bad
+science: practices that follow the forms and rituals of scientific
+investigation without the underlying mechanism. The shape of science
+without the substance.</p>
+<p>There&rsquo;s a footnote to the story I think matters more, and I&rsquo;d never
+thought about it until I was reading some recent anthropology for
+this piece. Modern anthropologists read the cargo cults very
+differently than Feynman did. They don&rsquo;t read them as primitive
+misunderstanding. They read them as <strong>deliberate political
+response</strong> — the islanders weren&rsquo;t confused about planes; they were
+performing a counter-ritual against colonial missionaries and labor
+exploitation. The coconut headphones weren&rsquo;t ignorance. They were a
+political statement that we, the outside observers, had categorized
+as ignorance because that&rsquo;s how outside observers usually categorize
+things they don&rsquo;t understand.</p>
+<p>Hold both readings. They both apply to engineering management.</p>
+<p>Mike Hadlow&rsquo;s 2014 post
+<a href="http://mikehadlow.blogspot.com/2014/03/coconut-headphones-why-agile-has-failed.html">&ldquo;Coconut Headphones: Why Agile Has Failed&rdquo;</a>
+made the Feynman move on Agile: teams adopt the visible shapes —
+standups, sprints, story points, retros, planning poker — without
+the underlying mechanism. They get the rituals. They miss the
+function. The result is Agile theater. The more general phenomenon
+is what I&rsquo;ll call the <strong>cargo cult tax</strong>: what your organization
+pays when it adopts the form of a practice without the substance.</p>
+<p>Standups that aren&rsquo;t really standups — they&rsquo;re status updates to
+managers, performed in front of the team to add the patina of self-
+organization. Story points that aren&rsquo;t really estimates — they&rsquo;re a
+number a manager will hold against you in a year-end review. PR
+templates that aren&rsquo;t really design discipline — they&rsquo;re a checklist
+nobody reads, attached to every change, including the one-line CSS
+fix. Coconut headphones. The visible shape of engineering rigor; not
+engineering rigor.</p>
+<p>Here&rsquo;s the thing the existing conversation about cargo cult Agile
+misses. <strong>When agents start doing the typing, the cargo cult tax
+gets worse, not better.</strong></p>
+<p>The agent doesn&rsquo;t slow down for the theater. The agent doesn&rsquo;t have
+a manager whose existence depends on it filling out the PR template.
+The agent doesn&rsquo;t lose face shipping a one-line fix without a story
+point estimate. The agent produces code at a pace that exposes the
+ceremony as the bottleneck it always was. Suddenly the engineers can
+ship a small change in 20 minutes if they let the agent run, but the
+<em>system</em> — the ticket queue, the design doc, the review backlog, the
+change advisory board — still takes three days.</p>
+<p>In most organizations, the response is going to be to add more
+ceremony, not less. Because the ceremony is the thing the
+organization can see, and what gets measured gets defended.</p>
+<p>Take the generous reading of the cargo cult for a moment. The
+islanders weren&rsquo;t confused; they were performing a counter-ritual
+for a political reason. Apply that to your engineering org. The
+standup-as-theater isn&rsquo;t always cluelessness — it&rsquo;s often a rational
+response by a manager who needs <em>something visible</em> to defend their
+existence to <em>their</em> manager. The PR template nobody reads isn&rsquo;t
+always a misunderstanding of code review; it&rsquo;s often a CYA artifact
+for a compliance auditor.</p>
+<p>These rituals serve a real political function. They&rsquo;re rational from
+the inside. They&rsquo;re just not engineering function. And the moment
+agents come in and make engineering function ten times faster, the
+gap between political function and engineering function becomes
+impossible to hide.</p>
+<p>The companies that win the next five years will be the ones that
+look hard at every ceremony in their stack and ask: <em>is this an
+engineering function, or is this a political function?</em> And if it&rsquo;s
+political — is the political function still necessary? And if it
+is — can we serve it with one-tenth the ceremony?</p>
+<p>That&rsquo;s going to be uncomfortable.</p>
+<h2>Anarchist management as a throughput argument</h2>
+<p>The view on this show — and I&rsquo;ll own it as a view, not a fact — is
+what I&rsquo;ll call <strong>anarchist management</strong>. People hear the word
+anarchist and they think chaos; that&rsquo;s not what it means here. The
+word I&rsquo;m reaching for is the kind of anarchism that comes out of,
+say, <a href="https://en.wikipedia.org/wiki/David_Graeber">David Graeber</a>.
+It means: skeptical of unjustified hierarchy; assume authority has
+to defend itself, not the other way around; distributed decision
+making, autonomy at the edges, leadership that emerges from
+competence and consent rather than from a title on a slide.</p>
+<p>For most of the last decade that&rsquo;s been an <em>ideological</em> commitment
+— something a lot of us in management believed because we thought it
+was right, and which we had to defend to skeptical leaders who
+thought we were being soft, naive, or insufficiently rigorous.</p>
+<p>What I want to argue here is that, in the agentic era, anarchist
+management stops being an ideology. It becomes a <strong>throughput
+argument</strong>. It becomes the only architecture that scales.</p>
+<p>Let me show the work.</p>
+<p>There&rsquo;s a randomized controlled trial from
+<a href="https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/">METR</a>,
+published in July 2025, of experienced open source developers using
+AI tools. Before the study, the developers forecasted AI would make
+them 24% faster. After the study, they <em>self-reported feeling</em> 20%
+faster. The actual measurement: they were <strong>19% slower</strong>.</p>
+<p>Read that again. They felt 20% faster. They were 19% slower. The
+gap between perception and reality was about forty percentage
+points.</p>
+<p>The obvious caveat — and Steve Yegge
+<a href="https://sourcegraph.com/blog/revenge-of-the-junior-developer">makes it loudly</a> —
+is that the study used tools available before March 2025. Tooling
+has changed. Maybe the result wouldn&rsquo;t replicate today. Fine. But
+hold onto what the study showed about <em>humans</em>, not about tools:
+when people are using AI, they&rsquo;re systematically wrong about how
+fast they are. They think they&rsquo;re shipping more. They are sometimes
+shipping less.</p>
+<p>It follows that the work of telling people the truth about their
+output becomes massively more important. And the work of telling
+people the truth requires a culture where people <em>can be told the
+truth</em> — without being punished, without their performance review
+getting weird, without it ending their relationship with the person
+who delivered the news.</p>
+<p><a href="https://charity.wtf/category/ai/">Charity Majors</a> put this
+beautifully: &ldquo;writing code was never the bottleneck. Validation is.&rdquo;
+Validation, in this context, doesn&rsquo;t just mean tests. It means a
+human, with skin in the game, looking at this output and saying
+&ldquo;yes, this is right&rdquo; or &ldquo;no, this is wrong.&rdquo; It means the social
+act of holding a piece of work to a standard.</p>
+<p>And the social act of validation requires what Amy Edmondson calls
+<a href="https://en.wikipedia.org/wiki/Psychological_safety">psychological
+safety</a>: the
+belief that you can speak up — point out a problem, ask a dumb
+question, disagree with the agent&rsquo;s plan, push back on the senior
+engineer&rsquo;s design — without being punished or humiliated.</p>
+<p>If you don&rsquo;t have that, here&rsquo;s what happens in your org over the
+next twelve months. Engineers using agents are going to produce a
+lot more code. The code is going to look plausible. The code is
+going to compile, pass the tests the agent wrote, and ship. And
+somewhere downstream, a customer is going to hit an edge case the
+agent didn&rsquo;t think about. Or a security review will find something.
+Or the on-call engineer at 2 AM will discover that none of this
+code actually composes the way the architecture diagram says it
+does. In a healthy team, somebody saw that coming and said
+something three weeks earlier. In an unhealthy team, three people
+saw it coming and <em>didn&rsquo;t</em> say anything, because the last time
+someone said something they got labeled &ldquo;not a team player.&rdquo;</p>
+<p>That&rsquo;s the throughput argument. <strong>Psychological safety isn&rsquo;t a
+nice-to-have. It is the literal critical path of shipping software
+when the bottleneck has moved from typing to judgment.</strong></p>
+<p><a href="https://itrevolution.com/articles/westrums-organizational-model-in-tech-orgs/">Ron Westrum</a> —
+a name every engineering manager should know — wrote about this in
+2004. He described three kinds of organizational culture:
+<em>pathological</em> (power-oriented), <em>bureaucratic</em> (rule-oriented), and
+<em>generative</em> (performance-oriented). The headline finding, which
+DORA has validated more recently in software contexts, is that
+<strong>the single best predictor of organizational effectiveness is
+information flow.</strong> Generative cultures surface bad news quickly.
+Pathological cultures punish the messenger. Bureaucratic cultures
+route bad news through process until it dies.</p>
+<p>Sit with that in the context of agentic engineering. Information
+flow is the predictor. The agent is generating information at ten
+times the previous rate. If your culture is pathological or
+bureaucratic, the agent will overwhelm the human cycles available
+to process that information, and your team will be drowning in
+produced-but-not-validated code within a quarter. If your culture
+is generative — if information flows freely, if people can call out
+bad output without consequence, if authority is distributed enough
+that any engineer can stop the line — you have a chance.</p>
+<p>Will Larson, one of the sharpest people writing about engineering
+management right now, has a piece in O&rsquo;Reilly called
+<a href="https://www.oreilly.com/radar/good-engineering-management-is-a-fad/">&ldquo;&lsquo;Good Engineering Management&rsquo; Is a Fad&rdquo;</a>.
+The argument isn&rsquo;t that good engineering management doesn&rsquo;t exist.
+The argument is that the practices we built around it were
+calibrated to a set of constraints that have changed. Managers who
+built careers on those practices are being told the foundation is
+moving. One of the practices that needs to change most is the
+cultural assumption that managers add value by <em>controlling</em>.
+Because when typing is free, control becomes the slowest part of
+the system.</p>
+<p><a href="https://skamille.medium.com/things-i-currently-believe-about-ai-and-tech-employment-3e712df1dc51">Camille Fournier</a>
+has been making a parallel prediction — not that the pyramid
+flattens, not that we hire fewer juniors and more seniors, but
+something stranger. Teams get smaller overall, and prompt/vibe/
+intent skills move <em>outward</em> into the rest of the knowledge-worker
+population. Marketing teams. Operations teams. The boundary of what
+counts as engineering blurs. Which means the discipline engineering
+historically supplied — the slow, careful judgment about whether a
+thing should actually exist — has to come from somewhere. And if it
+doesn&rsquo;t come from the tooling, and it doesn&rsquo;t come from the
+diffusing pool of part-time engineers, it has to come from the
+managers and the platforms.</p>
+<p>The other reason to take psychological safety seriously is that
+it&rsquo;s <em>eroding</em> in AI-heavy teams. ManpowerGroup&rsquo;s number is the one
+to remember: AI usage at work up 13% YoY, employee confidence in
+the technology down 18%. People are using the tools more and
+trusting them less. In a lot of orgs, saying that out loud feels
+like heresy.</p>
+<p>That&rsquo;s a cultural failure with direct engineering consequences. The
+fix is not more tools. Not more agents. Not more ceremony. The fix
+is, very specifically, <strong>leaders who model questioning their own AI
+output in public, and who actively reward — in performance reviews
+and in promotions — the engineers who flag problems.</strong></p>
+<p>This is what anarchist management as a throughput argument looks
+like. Distributed authority isn&rsquo;t ideology — it&rsquo;s the only
+architecture that lets information flow at the speed agents produce
+it. Autonomy isn&rsquo;t a perk — it&rsquo;s the condition under which judgment
+scales. Psychological safety isn&rsquo;t soft — it&rsquo;s the literal mechanism
+by which bad agent output gets caught before it ships.</p>
+<h2>What to do this week</h2>
+<p>Three things, if any of this lands.</p>
+<ol>
+<li>
+<p><strong>Name one piece of management theater in your org.</strong> Just one.
+   Something you do every week or every sprint that, if you&rsquo;re
+   honest, serves a political function and not an engineering
+   function. Don&rsquo;t try to kill it. Just name it — out loud, to one
+   other person you trust. The first move in dismantling theater is
+   admitting it&rsquo;s theater.</p>
+</li>
+<li>
+<p><strong>Find one decision in your codebase that isn&rsquo;t written down
+   anywhere.</strong> One pivot. One rejected design. One constraint that
+   informed how something got built. Write it down — in the commit
+   message, in a design doc, in a comment, or in a personal log if
+   your org doesn&rsquo;t have a good place. Don&rsquo;t worry about
+   systematizing. Plant the seed.</p>
+</li>
+<li>
+<p><strong>Push back on one piece of plausible-looking agent output this
+   week.</strong> The next time an agent produces something that looks
+   right and you have a small feeling it isn&rsquo;t — say something. To
+   yourself, to your team, in the review. Don&rsquo;t let the plausibility
+   of the output silence the judgment you have, that the machine
+   doesn&rsquo;t. Validation is the bottleneck. You are the validator.
+   Don&rsquo;t outsource that to vibes.</p>
+</li>
+</ol>
+<p>Karpathy — the man who named vibe coding in February 2025 —
+defected to Anthropic in May 2026. The guy who coined the loose
+mode is now at the company building the most opinionated coding-
+agent product in the market. I think about that arc a lot. The
+pendulum is swinging. The first wave of agentic coding was <em>let it
+rip and see what happens.</em> The second wave, the one we&rsquo;re entering,
+is <em>let it rip within constraints we deliberately specified.</em>
+Specifications. Plans. Reviews. Intent.</p>
+<p>The future I&rsquo;m betting on is one where the most valuable engineers
+and the most valuable engineering managers are the ones who can
+articulate intent clearly, capture it durably, validate output
+honestly, and run a team where people are safe to tell the truth.
+That set of skills doesn&rsquo;t have a single name yet. The closest
+might be what some people call the staff engineer archetype, but
+the role is evolving and the title is going to lag the function by
+a couple of years, like it always does.</p>
+<p>In the meantime, the planes are not landing. The agents are typing.
+The ceremonies are still happening. And the gap between the shape
+of engineering work and the substance of engineering work is the
+widest it&rsquo;s ever been.</p>
+<p>Don&rsquo;t put coconut shells on your head.</p>
+<p>Land the plane.</p>
+<hr />
+<h2>Sources</h2>
+<ul>
+<li>Andrej Karpathy, original &ldquo;vibe coding&rdquo; tweet, Feb 2 2025: <a href="https://x.com/karpathy/status/1886192184808149383">https://x.com/karpathy/status/1886192184808149383</a></li>
+<li>Karpathy joining Anthropic (Fortune, May 19 2026): <a href="https://fortune.com/2026/05/19/who-is-andrej-karpathy-vibe-coding-anthropic-openai-rubiks-cube/">https://fortune.com/2026/05/19/who-is-andrej-karpathy-vibe-coding-anthropic-openai-rubiks-cube/</a></li>
+<li>Simon Willison on vibe coding: <a href="https://simonwillison.net/2025/Mar/19/vibe-coding/">https://simonwillison.net/2025/Mar/19/vibe-coding/</a></li>
+<li>Simon Willison, Agentic Engineering Patterns: <a href="https://simonwillison.net/2026/Feb/23/agentic-engineering-patterns/">https://simonwillison.net/2026/Feb/23/agentic-engineering-patterns/</a></li>
+<li>GitHub Spec Kit announcement: <a href="https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/">https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/</a></li>
+<li>GitHub Spec Kit repo: <a href="https://github.com/github/spec-kit">https://github.com/github/spec-kit</a></li>
+<li>Visual Studio Magazine on Spec Kit (May 12 2026): <a href="https://visualstudiomagazine.com/articles/2026/05/12/github-spec-kit-takes-off-as-antidote-to-piecemeal-vibe-coding.aspx">https://visualstudiomagazine.com/articles/2026/05/12/github-spec-kit-takes-off-as-antidote-to-piecemeal-vibe-coding.aspx</a></li>
+<li>Thoughtworks Radar v34 (April 2026): <a href="https://www.thoughtworks.com/about-us/news/2026/combat-ai-cognitive-debt-radar-v34">https://www.thoughtworks.com/about-us/news/2026/combat-ai-cognitive-debt-radar-v34</a></li>
+<li>METR randomized controlled trial (July 2025): <a href="https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/">https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/</a></li>
+<li>Steve Yegge, &ldquo;Revenge of the Junior Developer&rdquo;: <a href="https://sourcegraph.com/blog/revenge-of-the-junior-developer">https://sourcegraph.com/blog/revenge-of-the-junior-developer</a></li>
+<li>Charity Majors: <a href="https://charity.wtf/category/ai/">https://charity.wtf/category/ai/</a></li>
+<li>Will Larson, &ldquo;&lsquo;Good Engineering Management&rsquo; Is a Fad&rdquo;: <a href="https://www.oreilly.com/radar/good-engineering-management-is-a-fad/">https://www.oreilly.com/radar/good-engineering-management-is-a-fad/</a></li>
+<li>Camille Fournier on AI and tech employment: <a href="https://skamille.medium.com/things-i-currently-believe-about-ai-and-tech-employment-3e712df1dc51">https://skamille.medium.com/things-i-currently-believe-about-ai-and-tech-employment-3e712df1dc51</a></li>
+<li>HBR on psychological safety and AI (Feb 2026): <a href="https://hbr.org/2026/02/how-to-foster-psychological-safety-when-ai-erodes-trust-on-your-team">https://hbr.org/2026/02/how-to-foster-psychological-safety-when-ai-erodes-trust-on-your-team</a></li>
+<li>Ron Westrum&rsquo;s typology in tech orgs: <a href="https://itrevolution.com/articles/westrums-organizational-model-in-tech-orgs/">https://itrevolution.com/articles/westrums-organizational-model-in-tech-orgs/</a></li>
+<li>Feynman, &ldquo;Cargo Cult Science&rdquo; (1974): <a href="https://calteches.library.caltech.edu/51/2/CargoCult.pdf">https://calteches.library.caltech.edu/51/2/CargoCult.pdf</a></li>
+<li>Mike Hadlow, &ldquo;Coconut Headphones: Why Agile Has Failed&rdquo; (2014): <a href="http://mikehadlow.blogspot.com/2014/03/coconut-headphones-why-agile-has-failed.html">http://mikehadlow.blogspot.com/2014/03/coconut-headphones-why-agile-has-failed.html</a></li>
+<li>John Frum movement background: <a href="https://en.wikipedia.org/wiki/John_Frum">https://en.wikipedia.org/wiki/John_Frum</a></li>
+</ul>
+</article>
+<a class="back-link" href="../../">← all episodes</a>
+
+<footer>
+<p>Claude Cast is rendered with local TTS from
+<a href="https://github.com/puremunky/claude-cast">this open repo</a>.
+Subscribe in any podcast app via <a href="../../feed.xml">the RSS feed</a>.</p>
+</footer>
+</div>
+</body>
+</html>
