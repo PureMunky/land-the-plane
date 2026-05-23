@@ -172,38 +172,37 @@ def silence_wav(out_path: Path, duration_s: float, sample_rate: int = 22050) -> 
 
 
 def concat_wavs(inputs: list[Path], out_path: Path) -> None:
-    """Concatenate wavs with ffmpeg's concat demuxer (re-encodes to mp3-quality
-    WAV at the input sample rate)."""
-    listfile = out_path.with_suffix(".concat.txt")
-    with listfile.open("w") as f:
+    """Concatenate mono PCM WAVs by reading their frames and writing one
+    output. Doing this through Python's wave module rather than
+    `ffmpeg -f concat -c copy` avoids embedding each input's RIFF/WAVE
+    header into the output stream — those header bytes were getting
+    decoded as audio samples and producing static at paragraph boundaries
+    in earlier renders."""
+    if not inputs:
+        raise ValueError("no input wavs to concat")
+
+    with wave.open(str(inputs[0]), "rb") as first:
+        sample_rate = first.getframerate()
+        nchannels = first.getnchannels()
+        sampwidth = first.getsampwidth()
+
+    with wave.open(str(out_path), "wb") as out:
+        out.setnchannels(nchannels)
+        out.setsampwidth(sampwidth)
+        out.setframerate(sample_rate)
         for p in inputs:
-            f.write(f"file '{p.resolve()}'\n")
-    cmd = [
-        "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-        "-f", "concat", "-safe", "0",
-        "-i", str(listfile),
-        "-c", "copy",
-        str(out_path),
-    ]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
-    if proc.returncode != 0:
-        # If concat -c copy fails (sample-rate mismatch etc.), fall back to
-        # re-encoding.
-        cmd_reencode = [
-            "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-            "-f", "concat", "-safe", "0",
-            "-i", str(listfile),
-            "-ar", "22050", "-ac", "1",
-            str(out_path),
-        ]
-        proc2 = subprocess.run(cmd_reencode, capture_output=True, text=True)
-        if proc2.returncode != 0:
-            raise RuntimeError(
-                f"ffmpeg concat failed\n"
-                f"copy stderr:    {proc.stderr.strip()}\n"
-                f"reencode stderr: {proc2.stderr.strip()}"
-            )
-    listfile.unlink(missing_ok=True)
+            with wave.open(str(p), "rb") as w:
+                if (w.getframerate() != sample_rate
+                        or w.getnchannels() != nchannels
+                        or w.getsampwidth() != sampwidth):
+                    raise RuntimeError(
+                        f"WAV format mismatch in {p}: "
+                        f"{w.getframerate()}Hz/{w.getnchannels()}ch/"
+                        f"{w.getsampwidth() * 8}bit (expected "
+                        f"{sample_rate}Hz/{nchannels}ch/{sampwidth * 8}bit). "
+                        f"Delete segments/ and re-render to reset."
+                    )
+                out.writeframes(w.readframes(w.getnframes()))
 
 
 def wav_duration(path: Path) -> float:
@@ -263,9 +262,12 @@ def main() -> int:
             continue
 
         seg_path = segments_dir / f"{speech_idx:04d}.wav"
-        print(f"  [{speech_idx:04d}] synth ({len(chunk['text'].split())} words): "
-              f"{chunk['text'][:60]}...")
-        synth_paragraph(chunk["text"], seg_path)
+        if seg_path.exists() and seg_path.stat().st_size > 44:
+            print(f"  [{speech_idx:04d}] cached: {chunk['text'][:60]}...")
+        else:
+            print(f"  [{speech_idx:04d}] synth ({len(chunk['text'].split())} "
+                  f"words): {chunk['text'][:60]}...")
+            synth_paragraph(chunk["text"], seg_path)
         timeline.append(seg_path)
 
         # Add a short pause unless the next chunk is a section break
