@@ -10,7 +10,7 @@
     <language>en-us</language>
     <copyright>© 2026 Land the Plane</copyright>
     <description>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</description>
-    <lastBuildDate>Sat, 23 May 2026 14:17:24 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 23 May 2026 14:29:34 +0000</lastBuildDate>
     <itunes:author>Land the Plane</itunes:author>
     <itunes:summary>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</itunes:summary>
     <itunes:owner>
@@ -433,8 +433,8 @@ widest it&rsquo;s ever been.</p>
 <li>Mike Hadlow, &ldquo;Coconut Headphones: Why Agile Has Failed&rdquo; (2014): <a href="http://mikehadlow.blogspot.com/2014/03/coconut-headphones-why-agile-has-failed.html">http://mikehadlow.blogspot.com/2014/03/coconut-headphones-why-agile-has-failed.html</a></li>
 <li>John Frum movement background: <a href="https://en.wikipedia.org/wiki/John_Frum">https://en.wikipedia.org/wiki/John_Frum</a></li>
 </ul>]]></content:encoded>
-      <enclosure url="https://puremunky.github.io/claude-cast/episodes/001-intent-layer/episode.mp3" length="19943594" type="audio/mpeg"/>
-      <itunes:duration>27:42</itunes:duration>
+      <enclosure url="https://puremunky.github.io/claude-cast/episodes/001-intent-layer/episode.mp3" length="19798144" type="audio/mpeg"/>
+      <itunes:duration>27:30</itunes:duration>
       <itunes:explicit>false</itunes:explicit>
       <itunes:author>Land the Plane</itunes:author>
       <itunes:subtitle>Intent, agents, and the coming reshape of engineering work.</itunes:subtitle>

@@ -30,7 +30,14 @@ from pathlib import Path
 
 VOICE_MODEL = Path(__file__).parent.parent / "voices" / "en-us-ryan-medium.onnx"
 LENGTH_SCALE = 1.10          # slows phonemes slightly for podcast pacing
-SENTENCE_SILENCE = 0.45      # seconds between sentences within a paragraph
+# DO NOT set SENTENCE_SILENCE to 0.45 or 0.55. Both values trigger a Piper
+# bug in piper-tts 1.x that drives RMS amplitude ~3x higher than normal and
+# pushes 6%+ of samples into hard clipping, producing audible static
+# throughout the audio. 0.4 and 0.5 are safe and give effectively the same
+# inter-sentence pause. Other affected values may exist; if you change
+# this, sanity-check with `scripts/generate.py --preview 1` and check the
+# resulting WAV's RMS — it should be under ~8000 for clean speech.
+SENTENCE_SILENCE = 0.5
 PARAGRAPH_SILENCE = 0.65     # seconds between paragraphs within a section
 SECTION_SILENCE = 1.40       # seconds at section breaks (---)
 
@@ -314,7 +321,12 @@ def main() -> int:
 
         seg_key = f"{speech_idx:04d}"
         seg_path = segments_dir / f"{seg_key}.wav"
-        text_hash = hashlib.sha1(chunk["text"].encode("utf-8")).hexdigest()[:12]
+        # Include synthesis params in the cache key so changes to length /
+        # sentence-silence invalidate stale audio.
+        params_str = f"ls={LENGTH_SCALE}|ss={SENTENCE_SILENCE}"
+        text_hash = hashlib.sha1(
+            (chunk["text"] + "||" + params_str).encode("utf-8")
+        ).hexdigest()[:12]
         cached = (
             manifest.get(seg_key) == text_hash
             and seg_path.exists()
