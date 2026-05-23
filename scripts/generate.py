@@ -22,6 +22,7 @@ import json
 import os
 import re
 import shutil
+import struct
 import subprocess
 import sys
 import wave
@@ -172,13 +173,32 @@ def silence_wav(out_path: Path, duration_s: float, sample_rate: int = 22050) -> 
         w.writeframes(b"\x00\x00" * n_frames)
 
 
+FADE_IN_MS = 10
+FADE_OUT_MS = 60
+
+
 def concat_wavs(inputs: list[Path], out_path: Path) -> None:
-    """Concatenate mono PCM WAVs by reading their frames and writing one
-    output. Doing this through Python's wave module rather than
-    `ffmpeg -f concat -c copy` avoids embedding each input's RIFF/WAVE
-    header into the output stream — those header bytes were getting
-    decoded as audio samples and producing static at paragraph boundaries
-    in earlier renders."""
+    """Concatenate mono PCM WAVs.
+
+    Two things this does beyond a naive concat:
+
+    1. It reads frames via Python's `wave` module and writes a single
+       output WAV, rather than `ffmpeg -f concat -c copy`, which would
+       splice each input's RIFF/WAVE header bytes into the middle of the
+       output stream (those header bytes get decoded as audio samples
+       and produce loud static at paragraph boundaries).
+
+    2. For each Piper-synthesised segment (anything whose filename does
+       NOT start with an underscore — silence WAVs are named with a
+       leading `_`), it applies a 10 ms linear fade-in and a 60 ms
+       linear fade-out. Piper's `ryan-medium` voice writes 0-200
+       samples of random high-amplitude noise at the very end of each
+       synth call (looks like buffer garbage past the last actual
+       sample). Without the tail fade you hear that noise once per
+       paragraph — 84 little bursts of static per episode. The fade
+       smoothly attenuates the tail to zero and also handles any
+       boundary discontinuity between segments.
+    """
     if not inputs:
         raise ValueError("no input wavs to concat")
 
@@ -186,6 +206,9 @@ def concat_wavs(inputs: list[Path], out_path: Path) -> None:
         sample_rate = first.getframerate()
         nchannels = first.getnchannels()
         sampwidth = first.getsampwidth()
+
+    fade_in_n = int(sample_rate * FADE_IN_MS / 1000)
+    fade_out_n = int(sample_rate * FADE_OUT_MS / 1000)
 
     with wave.open(str(out_path), "wb") as out:
         out.setnchannels(nchannels)
@@ -203,7 +226,23 @@ def concat_wavs(inputs: list[Path], out_path: Path) -> None:
                         f"{sample_rate}Hz/{nchannels}ch/{sampwidth * 8}bit). "
                         f"Delete segments/ and re-render to reset."
                     )
-                out.writeframes(w.readframes(w.getnframes()))
+                n = w.getnframes()
+                raw = w.readframes(n)
+
+            # Silence WAVs are pre-zeroed; nothing to fade.
+            if p.name.startswith("_"):
+                out.writeframes(raw)
+                continue
+
+            samples = list(struct.unpack(f"<{n}h", raw))
+            in_n = min(fade_in_n, n // 2)
+            out_n = min(fade_out_n, n // 2)
+            for j in range(in_n):
+                samples[j] = int(samples[j] * (j / in_n))
+            for j in range(out_n):
+                scale = (out_n - 1 - j) / out_n
+                samples[n - out_n + j] = int(samples[n - out_n + j] * scale)
+            out.writeframes(struct.pack(f"<{n}h", *samples))
 
 
 def wav_duration(path: Path) -> float:
