@@ -1,0 +1,13 @@
+{
+  "slug": "001-intent-layer",
+  "number": 1,
+  "title": "When the Planes Don't Land",
+  "subtitle": "Intent, agents, and the coming reshape of engineering work.",
+  "published": "2026-05-23",
+  "summary": "Karpathy moves to Anthropic, GitHub Spec Kit reframes the source of truth, and Thoughtworks warns about cognitive debt. The main piece argues that as agents take over the typing, three things get load-bearing in a way they never were before — capturing intent explicitly, refusing to pay the cargo cult tax, and treating psychological safety as a throughput argument rather than a soft skill.",
+  "duration_seconds": 1636,
+  "duration_hms": "27:16",
+  "mp3_filename": "episode.mp3",
+  "mp3_size_bytes": 19634827,
+  "word_count": 4818
+}

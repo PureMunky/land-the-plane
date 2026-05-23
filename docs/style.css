@@ -1,0 +1,83 @@
+
+:root {
+  --bg: #0e1119;
+  --surface: #161b27;
+  --text: #e8ebf2;
+  --muted: #9aa3b8;
+  --accent: #c780ff;
+  --rule: #232a3a;
+  --link: #8fb8ff;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--link); }
+a:hover { color: var(--accent); }
+.container { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+.site-header { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+.site-header img { width: 64px; height: 64px; border-radius: 12px; }
+.site-header h1 { font-size: 24px; margin: 0; letter-spacing: -0.01em; }
+.site-header a { color: var(--text); text-decoration: none; }
+.site-tagline { color: var(--muted); margin: 4px 0 32px; }
+.nav-links { margin: 8px 0 40px; display: flex; gap: 16px; font-size: 14px; }
+.nav-links a { color: var(--muted); text-decoration: none; }
+.nav-links a:hover { color: var(--accent); }
+h2 { font-size: 22px; letter-spacing: -0.01em; margin: 40px 0 8px; }
+h3 { font-size: 18px; margin: 32px 0 8px; }
+.episode-card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin: 20px 0;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.episode-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+.episode-meta {
+  display: flex; gap: 12px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.episode-card h2 { margin: 0 0 8px; font-size: 22px; }
+.episode-card .subtitle { color: var(--muted); margin: 4px 0 12px; font-style: italic; }
+.episode-card .summary { color: var(--text); margin: 0; }
+audio { width: 100%; margin: 24px 0; }
+article p { margin: 14px 0; }
+article ul, article ol { padding-left: 22px; }
+article li { margin: 6px 0; }
+article blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 18px 0;
+  padding: 4px 18px;
+  color: var(--muted);
+}
+article hr { border: 0; border-top: 1px solid var(--rule); margin: 36px 0; }
+.back-link {
+  display: inline-block;
+  margin-top: 32px;
+  color: var(--muted);
+  text-decoration: none;
+}
+.back-link:hover { color: var(--accent); }
+footer {
+  margin-top: 80px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+  font-size: 14px;
+  color: var(--muted);
+}
