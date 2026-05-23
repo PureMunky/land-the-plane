@@ -5,8 +5,7 @@
 > pipeline — research, drafting, audio synthesis, and publishing all
 > run through Claude Code and Piper TTS. The voice is synthetic.
 > Treat any episode as a working draft of an argument, not as
-> authoritative reporting. The GitHub repo is still named
-> `claude-cast` for historical reasons.
+> authoritative reporting.
 
 A weekly podcast about software engineering, AI-assisted development,
 and engineering leadership in the agentic era. Each episode is a solo
@@ -24,7 +23,7 @@ feed.
 ## What's in here
 
 ```
-claude-cast/
+land-the-plane/
 ├── CLAUDE.md                    project context auto-loaded by Claude
 │                                Code at session start
 ├── philosophies.md              editorial stance; the source of truth for

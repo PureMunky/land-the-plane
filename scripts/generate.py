@@ -22,6 +22,7 @@ import json
 import os
 import re
 import shutil
+import struct
 import subprocess
 import sys
 import wave
@@ -29,7 +30,14 @@ from pathlib import Path
 
 VOICE_MODEL = Path(__file__).parent.parent / "voices" / "en-us-ryan-medium.onnx"
 LENGTH_SCALE = 1.10          # slows phonemes slightly for podcast pacing
-SENTENCE_SILENCE = 0.45      # seconds between sentences within a paragraph
+# DO NOT set SENTENCE_SILENCE to 0.45 or 0.55. Both values trigger a Piper
+# bug in piper-tts 1.x that drives RMS amplitude ~3x higher than normal and
+# pushes 6%+ of samples into hard clipping, producing audible static
+# throughout the audio. 0.4 and 0.5 are safe and give effectively the same
+# inter-sentence pause. Other affected values may exist; if you change
+# this, sanity-check with `scripts/generate.py --preview 1` and check the
+# resulting WAV's RMS — it should be under ~8000 for clean speech.
+SENTENCE_SILENCE = 0.5
 PARAGRAPH_SILENCE = 0.65     # seconds between paragraphs within a section
 SECTION_SILENCE = 1.40       # seconds at section breaks (---)
 
@@ -140,7 +148,9 @@ def clean_for_tts(text: str) -> str:
 
 
 def synth_paragraph(text: str, out_path: Path) -> None:
-    """Run Piper on a single paragraph, writing to out_path."""
+    """Run Piper on a single paragraph, writing to out_path. Sanity-checks
+    the resulting amplitude so a future Piper bug or a misconfigured flag
+    can't silently produce overdriven static. See validate_segment()."""
     cmd = [
         "piper",
         "-m", str(VOICE_MODEL),
@@ -160,6 +170,50 @@ def synth_paragraph(text: str, out_path: Path) -> None:
             f"stderr: {proc.stderr.strip()}\n"
             f"input:  {text[:120]}..."
         )
+    validate_segment(out_path, text)
+
+
+# Sanity thresholds for a freshly-synthesised segment. Normal Piper
+# speech has RMS ~3000-7000 and clipping well under 0.1%. Known bug:
+# certain SENTENCE_SILENCE values (0.45, 0.55 in piper-tts 1.x) push
+# RMS to ~17000 and clipping to ~6%, producing audible static
+# throughout the audio. These thresholds catch that and similar future
+# regressions early.
+RMS_MAX = 11000
+CLIP_RATE_MAX = 0.02         # 2% of samples at |value| > 30000
+CLIP_ABS_THRESHOLD = 30000
+
+
+def validate_segment(wav_path: Path, text: str) -> None:
+    """Raise a RuntimeError if a Piper segment looks overdriven or
+    saturated. Cheap to run; reads the file once."""
+    with wave.open(str(wav_path), "rb") as w:
+        n = w.getnframes()
+        raw = w.readframes(n)
+    if n == 0:
+        raise RuntimeError(f"piper produced empty audio for: {text[:80]!r}")
+    samples = struct.unpack(f"<{n}h", raw)
+    rms = int((sum(s * s for s in samples) / n) ** 0.5)
+    clipped = sum(1 for s in samples if abs(s) > CLIP_ABS_THRESHOLD)
+    clip_rate = clipped / n
+    if rms > RMS_MAX or clip_rate > CLIP_RATE_MAX:
+        wav_path.unlink(missing_ok=True)
+        raise RuntimeError(
+            "Synthesised audio looks overdriven — likely a Piper bug or a "
+            "misconfigured synthesis flag.\n"
+            f"  file:       {wav_path}\n"
+            f"  text:       {text[:80]!r}\n"
+            f"  rms:        {rms} (max allowed: {RMS_MAX})\n"
+            f"  clip rate:  {clip_rate * 100:.2f}% "
+            f"(max allowed: {CLIP_RATE_MAX * 100:.1f}%)\n"
+            "\n"
+            "Known cause: piper-tts 1.x has a bug where certain "
+            "--sentence-silence values (0.45 and 0.55 both reproduce it) "
+            "drive output amplitude ~3x normal and clip 6%+ of samples. "
+            f"Current SENTENCE_SILENCE = {SENTENCE_SILENCE}. Try 0.4 or "
+            "0.5 (effectively the same pause length, both verified clean) "
+            "and re-render with --clean."
+        )
 
 
 def silence_wav(out_path: Path, duration_s: float, sample_rate: int = 22050) -> None:
@@ -172,13 +226,32 @@ def silence_wav(out_path: Path, duration_s: float, sample_rate: int = 22050) -> 
         w.writeframes(b"\x00\x00" * n_frames)
 
 
+FADE_IN_MS = 10
+FADE_OUT_MS = 60
+
+
 def concat_wavs(inputs: list[Path], out_path: Path) -> None:
-    """Concatenate mono PCM WAVs by reading their frames and writing one
-    output. Doing this through Python's wave module rather than
-    `ffmpeg -f concat -c copy` avoids embedding each input's RIFF/WAVE
-    header into the output stream — those header bytes were getting
-    decoded as audio samples and producing static at paragraph boundaries
-    in earlier renders."""
+    """Concatenate mono PCM WAVs.
+
+    Two things this does beyond a naive concat:
+
+    1. It reads frames via Python's `wave` module and writes a single
+       output WAV, rather than `ffmpeg -f concat -c copy`, which would
+       splice each input's RIFF/WAVE header bytes into the middle of the
+       output stream (those header bytes get decoded as audio samples
+       and produce loud static at paragraph boundaries).
+
+    2. For each Piper-synthesised segment (anything whose filename does
+       NOT start with an underscore — silence WAVs are named with a
+       leading `_`), it applies a 10 ms linear fade-in and a 60 ms
+       linear fade-out. Piper's `ryan-medium` voice writes 0-200
+       samples of random high-amplitude noise at the very end of each
+       synth call (looks like buffer garbage past the last actual
+       sample). Without the tail fade you hear that noise once per
+       paragraph — 84 little bursts of static per episode. The fade
+       smoothly attenuates the tail to zero and also handles any
+       boundary discontinuity between segments.
+    """
     if not inputs:
         raise ValueError("no input wavs to concat")
 
@@ -186,6 +259,9 @@ def concat_wavs(inputs: list[Path], out_path: Path) -> None:
         sample_rate = first.getframerate()
         nchannels = first.getnchannels()
         sampwidth = first.getsampwidth()
+
+    fade_in_n = int(sample_rate * FADE_IN_MS / 1000)
+    fade_out_n = int(sample_rate * FADE_OUT_MS / 1000)
 
     with wave.open(str(out_path), "wb") as out:
         out.setnchannels(nchannels)
@@ -203,7 +279,23 @@ def concat_wavs(inputs: list[Path], out_path: Path) -> None:
                         f"{sample_rate}Hz/{nchannels}ch/{sampwidth * 8}bit). "
                         f"Delete segments/ and re-render to reset."
                     )
-                out.writeframes(w.readframes(w.getnframes()))
+                n = w.getnframes()
+                raw = w.readframes(n)
+
+            # Silence WAVs are pre-zeroed; nothing to fade.
+            if p.name.startswith("_"):
+                out.writeframes(raw)
+                continue
+
+            samples = list(struct.unpack(f"<{n}h", raw))
+            in_n = min(fade_in_n, n // 2)
+            out_n = min(fade_out_n, n // 2)
+            for j in range(in_n):
+                samples[j] = int(samples[j] * (j / in_n))
+            for j in range(out_n):
+                scale = (out_n - 1 - j) / out_n
+                samples[n - out_n + j] = int(samples[n - out_n + j] * scale)
+            out.writeframes(struct.pack(f"<{n}h", *samples))
 
 
 def wav_duration(path: Path) -> float:
@@ -275,7 +367,12 @@ def main() -> int:
 
         seg_key = f"{speech_idx:04d}"
         seg_path = segments_dir / f"{seg_key}.wav"
-        text_hash = hashlib.sha1(chunk["text"].encode("utf-8")).hexdigest()[:12]
+        # Include synthesis params in the cache key so changes to length /
+        # sentence-silence invalidate stale audio.
+        params_str = f"ls={LENGTH_SCALE}|ss={SENTENCE_SILENCE}"
+        text_hash = hashlib.sha1(
+            (chunk["text"] + "||" + params_str).encode("utf-8")
+        ).hexdigest()[:12]
         cached = (
             manifest.get(seg_key) == text_hash
             and seg_path.exists()
