@@ -17,24 +17,42 @@ feed.
 
 ```
 claude-cast/
+├── CLAUDE.md                    project context auto-loaded by Claude
+│                                Code at session start
 ├── philosophies.md              editorial stance; the source of truth for
 │                                the show's voice and recurring themes
 ├── episodes/
+│   ├── INDEX.md                 topic/angle log so future episodes don't
+│   │                            accidentally repeat (or knowingly revisit)
 │   └── 001-intent-layer/
 │       ├── script.md            spoken script (input to TTS)
 │       ├── post.md              blog version (rendered on the site)
-│       ├── segments/            per-paragraph WAVs (intermediate)
-│       ├── episode.wav          rendered audio (intermediate)
+│       ├── research.md          (optional) sourced research brief — kept
+│       │                        for reference if you used prompts/
+│       ├── segments/            per-paragraph WAVs (intermediate, gitignored)
+│       ├── episode.wav          rendered audio (intermediate, gitignored)
 │       ├── episode.mp3          final audio for distribution
 │       └── episode.json         metadata (title, duration, size, etc.)
 ├── templates/
 │   └── episode_template.md      scaffold for new episodes
+├── prompts/
+│   ├── research_brief.md        sourced-research prompt (LLM-agnostic)
+│   ├── draft_script.md          script + post drafting prompt
+│   └── check_script.md          pre-render sanity-check prompt
+├── .claude/commands/            slash commands for the weekly workflow
+│   ├── new-episode.md
+│   ├── draft-episode.md
+│   ├── check-script.md
+│   ├── render.md
+│   └── publish.md
 ├── scripts/
 │   ├── install_voice.sh         download the Piper voice model
 │   ├── new_episode.sh           scaffold a new episode directory
 │   ├── generate.py              render a script.md into MP3 + metadata
+│   │                            (`--preview N` for fast iteration)
 │   ├── make_cover.py            (re)generate docs/cover.png
-│   └── build_site.py            build docs/ from episodes/
+│   ├── build_site.py            build docs/ from episodes/
+│   └── release.sh               render + build + commit + push, one shot
 ├── docs/                        GitHub Pages source
 │   ├── index.html               home page (episode list)
 │   ├── cover.png                show cover art
@@ -76,25 +94,61 @@ python scripts/make_cover.py
 
 ## The weekly workflow
 
+### From inside Claude Code (recommended)
+
+The fast path uses the slash commands in `.claude/commands/`:
+
+```
+/new-episode 002 new-code-review
+/draft-episode 002-new-code-review "the new code review when agents write the first draft"
+/check-script 002-new-code-review
+/render 002-new-code-review
+/publish 002-new-code-review
+```
+
+`/draft-episode` reads `philosophies.md` and `episodes/INDEX.md`,
+spawns a research agent (sourced web brief), then writes both
+`script.md` and `post.md` following the show's structure. Review
+before rendering.
+
+### From a regular shell (or any LLM)
+
+The same steps without slash-command sugar:
+
 ```bash
-# 1. Scaffold the new episode
+# 1. Scaffold
 bash scripts/new_episode.sh 002 new-code-review
 
 # 2. Write the script and the post
 $EDITOR episodes/002-new-code-review/script.md
-$EDITOR episodes/002-new-code-review/post.md   # copy script.md as a starting point
+$EDITOR episodes/002-new-code-review/post.md
 
-# 3. Render the audio (~10 min wall-clock for a 30-min episode)
-python scripts/generate.py episodes/002-new-code-review/script.md
+# 3. (Optional) preview the first few paragraphs to test voice/pacing
+#    without paying the full ~10 min cost
+python scripts/generate.py episodes/002-new-code-review/script.md --preview 3
 
-# 4. Rebuild the site
-python scripts/build_site.py
-
-# 5. Commit and push — the GitHub Action publishes docs/ to Pages
-git add episodes/002-new-code-review docs
-git commit -m "Episode 002: the new code review"
-git push
+# 4. Render and publish in one shot
+bash scripts/release.sh 002-new-code-review
 ```
+
+`scripts/release.sh` runs generate.py → build_site.py → stages the
+changes → shows you the diff → asks before committing and pushing.
+Pass `--no-render` if you've already rendered and only want to ship
+site/post edits.
+
+### Drafting with any LLM (no Claude Code)
+
+`prompts/` contains the canonical templates:
+
+- `prompts/research_brief.md` — produces a sourced research brief for
+  the week's topic. Output goes to `episodes/<slug>/research.md`.
+- `prompts/draft_script.md` — turns `philosophies.md` + the research
+  brief into a draft `script.md` and `post.md`.
+- `prompts/check_script.md` — pre-render sanity check for TTS issues
+  and metadata problems.
+
+Copy any of these into a chat with any frontier model. They're
+LLM-agnostic.
 
 ## Hosting on GitHub Pages
 

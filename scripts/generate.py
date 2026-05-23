@@ -216,6 +216,11 @@ def main() -> int:
     ap.add_argument("script", type=Path, help="path to script.md")
     ap.add_argument("--clean", action="store_true",
                     help="delete existing segments/ before generating")
+    ap.add_argument("--preview", type=int, metavar="N", default=None,
+                    help="render only the first N speech chunks, write to "
+                         "preview.wav (no MP3, no metadata). Useful for "
+                         "iterating on the opening or testing voice "
+                         "settings without paying the full ~10 min cost.")
     args = ap.parse_args()
 
     if not VOICE_MODEL.exists():
@@ -239,6 +244,9 @@ def main() -> int:
     segments_dir.mkdir(parents=True, exist_ok=True)
 
     chunks = parse_script(args.script)
+    if args.preview is not None:
+        chunks = limit_to_first_n_speech(chunks, args.preview)
+        print(f"Preview mode: rendering first {args.preview} speech chunks.")
     word_count = sum(len(c["text"].split()) for c in chunks if c["kind"] == "speech")
     print(f"Parsed {len(chunks)} chunks; ~{word_count} spoken words.")
 
@@ -269,7 +277,8 @@ def main() -> int:
             timeline.append(paragraph_silence)
         speech_idx += 1
 
-    wav_path = episode_dir / "episode.wav"
+    wav_name = "preview.wav" if args.preview is not None else "episode.wav"
+    wav_path = episode_dir / wav_name
     print(f"Concatenating {len(timeline)} segments into {wav_path}")
     concat_wavs(timeline, wav_path)
 
@@ -278,6 +287,10 @@ def main() -> int:
     seconds = int(duration % 60)
     print(f"WAV duration: {minutes}m {seconds}s "
           f"({wav_path.stat().st_size / 1024 / 1024:.1f} MB)")
+
+    if args.preview is not None:
+        print(f"Preview ready: {wav_path}")
+        return 0
 
     mp3_path = episode_dir / "episode.mp3"
     print(f"Encoding MP3: {mp3_path}")
@@ -296,6 +309,20 @@ def main() -> int:
     print(f"Wrote metadata: {json_path}")
     print(f"Done. {mp3_path.stat().st_size / 1024 / 1024:.1f} MB MP3.")
     return 0
+
+
+def limit_to_first_n_speech(chunks: list[dict], n: int) -> list[dict]:
+    """Trim the chunk list to the first n speech chunks, preserving any
+    section breaks that fall between them."""
+    out: list[dict] = []
+    speech_count = 0
+    for c in chunks:
+        if c["kind"] == "speech":
+            if speech_count >= n:
+                break
+            speech_count += 1
+        out.append(c)
+    return out
 
 
 def encode_mp3(wav: Path, mp3: Path, bitrate: str = "96k") -> None:

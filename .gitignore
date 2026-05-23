@@ -12,6 +12,7 @@ episodes/*/segments/
 # Uncompressed intermediate audio. The MP3 in the same directory is what
 # we publish; the WAV is a 70MB intermediate not worth versioning.
 episodes/*/episode.wav
+episodes/*/preview.wav
 
 # Python
 __pycache__/
