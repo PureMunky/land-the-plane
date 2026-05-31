@@ -10,12 +10,12 @@
     <language>en-us</language>
     <copyright>© 2026 Land the Plane</copyright>
     <description>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</description>
-    <lastBuildDate>Sun, 31 May 2026 00:06:34 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 31 May 2026 01:37:52 +0000</lastBuildDate>
     <itunes:author>Land the Plane</itunes:author>
     <itunes:summary>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</itunes:summary>
     <itunes:owner>
       <itunes:name>Land the Plane</itunes:name>
-      <itunes:email>noreply@example.com</itunes:email>
+      <itunes:email>phil@philcorbett.net</itunes:email>
     </itunes:owner>
     <itunes:image href="https://puremunky.github.io/land-the-plane/cover.png"/>
     <itunes:category text="Technology"/>
