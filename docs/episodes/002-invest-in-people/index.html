@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crew Rest — Land the Plane</title>
+<link rel="stylesheet" href="../../style.css">
+<link rel="alternate" type="application/rss+xml" title="Land the Plane" href="../../feed.xml">
+<meta property="og:title" content="Crew Rest — Land the Plane">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://puremunky.github.io/land-the-plane/cover.png">
+</head>
+<body>
+<div class="container">
+<header class="site-header">
+<a href="../../"><img src="../../cover.png" alt=""></a>
+<a href="../../"><h1>Land the Plane</h1></a>
+</header>
+<p class="site-tagline">Software engineering, AI-assisted development, and what it actually takes to lead engineering teams in the agentic era.</p>
+<aside class="experiment-notice">
+<strong>Experimental.</strong> Every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline. The voice is synthetic (Piper TTS). Treat episodes as working drafts of an argument, not authoritative reporting.
+</aside>
+<nav class="nav-links">
+  <a href="../../">Episodes</a>
+  <a href="../../feed.xml">RSS</a>
+  <a href="https://github.com/puremunky/land-the-plane">GitHub</a>
+</nav>
+
+<p class="episode-meta">Episode 002 ·
+2026-05-30 ·
+24:45</p>
+<audio controls preload="metadata" src="./episode.mp3"></audio>
+<article>
+<h1>Crew Rest</h1>
+<p><em>Why time with other humans is the maintenance schedule for the part of the work AI can&rsquo;t run.</em></p>
+<p><em>Published 2026-05-30. The audio version of this piece is
+<a href="./episode.mp3">Land the Plane episode 2</a>; this post covers the same
+ground for people who&rsquo;d rather read.</em></p>
+<hr />
+<h2>This week on the radar</h2>
+<p>Four things from the last little while.</p>
+<p><strong>Engagement hit a fifteen-year low.</strong> Gallup&rsquo;s
+<a href="https://www.gallup.com/workplace/349484/state-of-the-global-workplace.aspx"><em>State of the Global Workplace 2026</em></a>,
+released in April, reports global employee engagement falling to
+<strong>20%</strong> in 2025 — the lowest since 2020 — and pegs the cost of
+disengagement at roughly <strong>$10 trillion</strong> in lost productivity.
+Treat the dollar figure as directional, not precise; it&rsquo;s a model,
+not a measurement. The number that matters more: <strong>more than one in
+five employees report feeling lonely at work</strong>, climbing toward
+<strong>26% for workers under 35</strong>
+(<a href="https://www.flexos.work/learn/gallups-employee-engagement-2026">FlexOS summary</a>).
+We&rsquo;re going to spend most of this piece on that word, <em>lonely</em> —
+it&rsquo;s more load-bearing than it looks.</p>
+<p><strong>A 233-study review on loneliness at work.</strong> A 2026 review in the
+<em>Journal of Management</em>, <a href="https://journals.sagepub.com/doi/full/10.1177/01492063241313320">&ldquo;All the Lonely
+People&rdquo;</a>
+(McCarthy, Erdogan, Bauer, Kudret &amp; Campion), synthesizes 233
+empirical studies and draws the distinction the whole piece hangs
+on: <strong>isolation is objective</strong> (being physically alone);
+<strong>loneliness is subjective</strong> (the sense that your relationships are
+deficient). You can be deeply lonely in a crowded office — or in a
+Slack with four hundred people in it. Proximity doesn&rsquo;t fix it;
+connection does.</p>
+<p><strong>Edmondson on AI as a two-edged sword.</strong> Amy Edmondson — who put
+<a href="https://en.wikipedia.org/wiki/Psychological_safety">psychological
+safety</a> on the
+map — has spent the last few months
+<a href="https://www.businessthink.unsw.edu.au/articles/psychological-safety-amy-edmondson-remote-work-artificial-intelligence">applying it to AI</a>:
+&ldquo;only in environments where people feel safe do they speak openly,
+experiment, and view AI as an opportunity rather than a threat.&rdquo; The
+sharp question she keeps asking: <em>will people feel safe admitting they
+don&rsquo;t understand a recommendation the AI just made?</em> Hold that — it&rsquo;s
+the bridge back to <a href="../001-intent-layer/post.md">last week</a>.</p>
+<p><strong>The counter-data, for honesty.</strong> Anthropic&rsquo;s
+<a href="https://resources.anthropic.com/2026-agentic-coding-trends-report"><em>2026 Agentic Coding Trends Report</em></a>
+complicates the easy &ldquo;AI isolates engineers&rdquo; story: developers now
+use AI in <strong>~60% of their work</strong> but fully delegate only <strong>0–20% of
+tasks</strong> — and the harder, more design-dependent the work, the more
+they keep humans in the loop. So the tool isn&rsquo;t <em>forcing</em> isolation.
+The villain here isn&rsquo;t the agent. It&rsquo;s the temptation, and the
+option.</p>
+<hr />
+<h2>The week where nothing went wrong</h2>
+<p>Here&rsquo;s a scene. It&rsquo;s Thursday. You&rsquo;ve had a great week, by one
+definition of great. You and your agent have been heads-down since
+Monday. You shipped a service. You cleared a month-old backlog. The
+diffs are beautiful, the tests are green. Every morning you sat down,
+described what you wanted, and watched it get built. The agent
+answered instantly, never pushed back, never needed anything, never
+had a bad day. By every measure available <em>on your screen</em>, it was
+the best colleague you&rsquo;ve ever had.</p>
+<p>Then you stand up to get a glass of water and notice something
+strange: <strong>you haven&rsquo;t had a real conversation with another human
+since Monday.</strong> Not a standup. Not a thread. A conversation — the
+kind where somebody disagrees and you have to sit with it; the kind
+where you say <em>I&rsquo;m stuck</em> and someone you trust says <em>yeah, that part
+is genuinely hard, let me look.</em> By the org chart you were fully
+connected all week. Calendar full, messages flowing. And you were, in
+the precise clinical sense from that <em>Journal of Management</em> review,
+<strong>lonely</strong>.</p>
+<p>Here&rsquo;s what makes it dangerous: nothing went wrong. The week worked.
+By every dashboard your manager looks at, you crushed it. The cost
+didn&rsquo;t show up anywhere a dashboard can see — it showed up as a slow,
+quiet draw-down on something that doesn&rsquo;t have a meter on it.</p>
+<p>This piece is about that meter you can&rsquo;t see. It&rsquo;s about why time
+away from the keyboard, with other humans, isn&rsquo;t a reward you earn
+<em>after</em> the work — it&rsquo;s an input <em>to</em> it. And it&rsquo;s about a finding
+that genuinely unsettled me: the people most likely to be lonely in
+your org aren&rsquo;t the disengaged stragglers. They&rsquo;re the ones at the
+center.</p>
+<p>The title is &ldquo;Crew Rest.&rdquo; Here&rsquo;s why.</p>
+<h2>Rest is a maintenance schedule, not a reward</h2>
+<p>In aviation, <strong>crew rest</strong> is a hard, legally mandated rest period
+between duty. You can&rsquo;t waive it by being a hero, can&rsquo;t push through
+because the schedule&rsquo;s tight. The rule exists because the industry
+learned, expensively, that a depleted pilot is a hazard to everyone
+on the plane — and that the pilot is the worst-positioned person to
+judge their own depletion. So the rest isn&rsquo;t discretionary. It&rsquo;s on
+the maintenance schedule, next to the engine inspections. It&rsquo;s a
+safety system, because it is one.</p>
+<p>Put engineering rest in that category. Not a perk, not a thing you
+earn after suffering enough — a maintenance system that keeps the most
+expensive component, <em>human judgment</em>, from failing in a way nobody
+catches until 2 AM.</p>
+<p>And here&rsquo;s where the science gets more specific than generic
+take-a-break advice. A body of recovery research — much of it
+descending from Sabine Sonnentag — asks: what actually makes rest
+restorative? The answer isn&rsquo;t &ldquo;time off the clock.&rdquo; Plenty of people
+take time off and come back just as fried. The two ingredients that
+<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7596587/">consistently drive
+recovery</a> are
+<strong>psychological detachment</strong> — actually mentally leaving the work,
+not just physically — and <strong>positive emotion</strong>.</p>
+<p>Sit with detachment. The trouble with how a lot of us rest now is we
+never do it. We close the laptop and keep running the bug in the
+background. We&rsquo;re at dinner and cognitively still in the codebase.
+The agentic workflow makes this worse, because the agent is <em>always
+available</em> — there&rsquo;s no natural stopping point, the build is never
+done-done, you can always kick off one more run before bed. The
+friction that used to <em>force</em> detachment — the office closing, the
+twenty-minute compile that sent you for coffee with somebody — much
+of it is gone. The agent removed it. So detachment is no longer
+something that happens to you. It&rsquo;s something you have to choose.</p>
+<p>This is where rest meets the rest of the piece. The APA&rsquo;s framing of
+<a href="https://www.apa.org/topics/mental-health/seven-rest-types">seven types of rest</a>
+names <strong>social rest</strong> — restoration <em>with</em> supportive others — as a
+distinct category from physical and mental rest. You can&rsquo;t sleep your
+way to it or get it from a quiet room. You get it from people who
+refill you instead of drawing on you.</p>
+<p>But — and the
+<a href="https://www.researchgate.net/publication/361913348_Role_of_work_breaks_in_well-being_and_performance_A_systematic_review_and_future_research_agenda">research is clear</a>,
+I don&rsquo;t want to oversell it — social time only restores you if you&rsquo;re
+actually <em>detached</em> while you&rsquo;re in it. Lunch with a coworker where
+you grind through the incident the whole time isn&rsquo;t social rest; it&rsquo;s
+a meeting with worse posture. The recovery comes from the
+combination: with other people, <em>and</em> genuinely off the work.</p>
+<p>The sabbatical research adds a timing finding I love: the people who
+got the most out of extended leave
+<a href="https://www.shrm.org/topics-tools/news/benefits-compensation/sabbaticals-solution-to-employee-burnout">weren&rsquo;t the ones who collapsed into it
+half-dead</a>.
+They rested <em>proactively</em>, before depletion, and in emotional and
+relational modes — time with people they loved — not just sleep. The
+benefit persisted for months after they returned. Rest done right
+isn&rsquo;t a debt you pay down. It&rsquo;s a capability you build.</p>
+<p>So the first move is to reclassify the thing. Time away, with other
+humans, isn&rsquo;t the reward for the work. It&rsquo;s part of the work. It&rsquo;s
+crew rest. And in a world where the agent will happily let you fly
+twenty hours a day, you&rsquo;re the only one who can ground the plane.</p>
+<h2>Relationships are the account you draw down on</h2>
+<p>Rest with people refills the person. Now: what it builds <em>between</em>
+people — the part that shows up in your engineering outcomes.</p>
+<p>Start with the most-quoted study in the space. Google&rsquo;s
+<a href="https://psychsafety.com/googles-project-aristotle/">Project Aristotle</a>
+studied ~180 teams across 250 attributes over two years to answer one
+question: what makes a team effective? They expected it to be the mix
+of talent. It wasn&rsquo;t. The number one differentiator, above all of
+it, was <strong>psychological safety</strong> — the shared belief that the team is
+safe to take risks in, to be wrong in, to say <em>I don&rsquo;t know</em> in. The
+line from the writeup I keep coming back to: <em>&ldquo;no one wants to put on
+a &lsquo;work face&rsquo; when they get to the office.&rdquo;</em> The teams that won were
+the ones where people could show up as people.</p>
+<p>Psychological safety is the <em>outcome</em>. For the <em>input</em>, reach for
+Patrick Lencioni&rsquo;s <em>Five Dysfunctions of a Team</em>, which puts
+<a href="https://www.fivebehaviors.com/blog/establishing-a-foundation-of-trust/"><strong>trust</strong> at the base of the
+pyramid</a> —
+everything else (healthy conflict, commitment, accountability,
+results) sits on top of it. His definition is the part to read
+carefully: a willingness to be <em>&ldquo;completely vulnerable with one
+another — to let down our guard, admit our flaws, and ask for
+help.&rdquo;</em></p>
+<p><strong>Admit our flaws. And ask for help.</strong> Hold those against the
+agentic workflow and something quietly alarming happens. Asking for
+help used to be a <em>social act</em> — when you were stuck, you turned to a
+human, exposed that you didn&rsquo;t know the thing, and asked. That little
+moment of vulnerability, multiplied across a thousand small
+stuck-moments a year, is a huge amount of how trust actually gets
+built. You ask, they help, you&rsquo;re slightly indebted and slightly
+closer, and next week it goes the other way. That&rsquo;s the flywheel.</p>
+<p>The agent removes the moment. Now when you&rsquo;re stuck, you turn to the
+model. It answers instantly, never makes you feel dumb, never
+remembers you asked the same thing yesterday. Honestly a better
+experience than a busy senior who sighs before they help. So all of
+us are going to ask the agent instead — thousands of times a year —
+and every one of those is a deposit into the trust account that <em>no
+longer gets made</em>. That&rsquo;s the muscle that atrophies: not because
+anyone decided relationships don&rsquo;t matter, but because the single
+most common occasion for building one — <em>I&rsquo;m stuck, can you help</em> —
+got quietly intercepted by a tool that does it faster.</p>
+<p>This isn&rsquo;t only about feelings. Stephen M.R. Covey&rsquo;s
+<a href="https://speedoftrust.com/"><em>The Speed of Trust</em></a> makes the economic
+claim cleanly: <em>&ldquo;When trust goes down, speed will also go down and
+costs will go up. When trust goes up, speed will also go up and costs
+will go down.&rdquo;</em> Trust is a literal multiplier on how fast a group can
+move, because high-trust teams don&rsquo;t have to verify everything,
+document defensively, route everything through process, cover
+themselves at every step.</p>
+<p>And here&rsquo;s the agentic irony I can&rsquo;t stop turning over. Agents made
+typing nearly free — they collapsed the cost of <em>producing code</em> to
+almost nothing. But the speed of everything that happens <em>between
+people</em> — agreeing on what to build, trusting a teammate&rsquo;s judgment,
+accepting hard feedback, deciding to kill a project — is still
+entirely governed by trust. We optimized the cheap part to zero and
+left the expensive part exactly where it was. Proportionally, the
+human part is now almost the <em>entire</em> cost. <strong>The relationship is the
+bottleneck now</strong> — not because it got slower, but because everything
+around it got instant.</p>
+<p>So the time you invest in the people you work with isn&rsquo;t
+extracurricular. It&rsquo;s you funding the account the whole team draws
+down on every time something is genuinely hard — every honest code
+review, every <em>this-is-not-good-enough</em>, every <em>I-think-we&rsquo;re-
+building-the-wrong-thing</em>. Those withdrawals are only possible if
+someone made the deposits. And the deposits get made off the
+keyboard: in the lunch, on the walk, in the unhurried hour where
+you&rsquo;re two humans, not two roles.</p>
+<h2>The loneliness accelerant</h2>
+<p>Before the finding that got under my skin, don&rsquo;t file loneliness
+under &ldquo;soft&rdquo; the way our industry files most things about humans —
+because there&rsquo;s a hard number on it. In 2023 the U.S. Surgeon General
+put out an 81-page advisory,
+<a href="https://www.ncbi.nlm.nih.gov/books/NBK595227/"><em>Our Epidemic of Loneliness and Isolation</em></a>,
+with an anchor finding you can&rsquo;t unhear: the mortality risk of chronic
+social disconnection is <strong>comparable to smoking up to 15 cigarettes a
+day</strong> — roughly <strong>29% higher heart-disease risk</strong> and <strong>32% higher
+stroke risk</strong> — and it names workplaces directly as a domain where
+&ldquo;performance, productivity, and engagement are diminished.&rdquo; We spent
+two decades on ergonomic chairs and standing desks to protect
+engineers from back pain, and put a fruit bowl in the kitchen for a
+relational risk on the order of a pack-a-day habit. The layer we treat
+as soft and optional is, by the numbers, one of the most dangerous
+things in the building.</p>
+<p>Now the finding that inverts what you&rsquo;d assume.</p>
+<p>You&rsquo;d assume loneliness at work concentrates at the bottom — the
+disengaged, the checked-out. It doesn&rsquo;t. Gallup&rsquo;s 2026 data says
+<strong>leaders report the highest engagement (26%) and the highest
+thriving (43%) — and the highest loneliness (31%)</strong>
+(<a href="https://www.gallup.com/workplace/349484/state-of-the-global-workplace.aspx">Gallup</a>).
+The people at the center of the network — most connected by org
+chart, in every meeting, copied on everything — are the loneliest in
+the building.</p>
+<p>Read that next to the isolation-vs-loneliness distinction and it
+snaps into focus. Loneliness isn&rsquo;t about how many people are near
+you; it&rsquo;s about whether the connections are <em>real</em>. The people at the
+center have the most connections and the fewest real ones, because
+every interaction has an agenda attached — everyone wants something,
+or is performing, or is managing up. The org chart connects you to
+everyone and bonds you to no one.</p>
+<p>Now drop an agent into that life. Here&rsquo;s the trap, stated as plainly
+as I can:</p>
+<blockquote>
+<p>An agent gives you the sensation of collaboration while delivering
+none of its value.</p>
+</blockquote>
+<p>Think about what a real collaborator does. They answer your question
+— yes. But they also push back. They also need something from you
+sometimes. They remember you were short with them last week. They
+catch the thing you got wrong, because they have skin in the game and
+a reputation on the line. They occasionally just want to talk to you
+because they like you. The friction and the need and the memory and
+the reciprocity aren&rsquo;t bugs in human collaboration — they&rsquo;re the part
+that builds the trust, and the part that catches the error.</p>
+<p>The agent has none of it. Instant, never pushes back socially, never
+needs anything, never remembers a slight. Pure frictionless
+responsiveness. And that <em>feels wonderful</em> — like the best colleague
+you ever had. But it&rsquo;s the exact profile of an interaction that feels
+deeply social and is, functionally, completely solitary. It scratches
+the itch of collaboration without doing any of the things
+collaboration is <em>for</em>.</p>
+<p>That&rsquo;s what I mean by: <strong>AI is a loneliness accelerant disguised as a
+collaborator.</strong> Not that it isolates you by force — the Anthropic
+data says people keep humans in the loop on the hard stuff. It&rsquo;s
+subtler and worse than force: it removes the <em>felt need</em> for other
+people. It satisfies the surface symptom of wanting company while the
+underlying thing — real connection, real trust, real relationship —
+quietly starves. You don&rsquo;t notice you&rsquo;re starving because you feel
+full. Hunger you&rsquo;d fix. Fullness you ignore.</p>
+<p>And here&rsquo;s where it becomes an engineering problem, which is the
+through-line of this show. <a href="../001-intent-layer/post.md">Last week</a>
+the argument was that psychological safety is the critical path —
+catching bad agent output requires a team where people can say <em>this
+is wrong</em> without being punished. This week is the foundation
+underneath that: <strong>you cannot have psychological safety on a team
+with no relationships.</strong> Safety isn&rsquo;t a policy you announce or a value
+on a wall. It grows in the soil of actual human trust, built over
+actual human time. You can&rsquo;t install it. You have to grow it. And it
+grows off the keyboard.</p>
+<p>Run the two episodes together and the dependency chain is stark. The
+agent generates plausible, confident, sometimes-wrong output at ten
+times the old rate. Catching it requires someone with judgment to say
+so out loud. Saying it out loud requires psychological safety. Safety
+requires trust. Trust requires relationship. Relationship requires
+unhurried human time — the exact thing the agentic workflow quietly
+deletes, because the agent removed every natural occasion for it. The
+chain runs straight from your 2 AM incident all the way back to
+whether you ever go to lunch with anybody anymore.</p>
+<p>That&rsquo;s the argument. The scarce input is no longer output. It&rsquo;s the
+relational capital between people — the one input on the whole system
+you can&rsquo;t buy more compute to fix.</p>
+<p><strong>In the agentic era, time with other humans isn&rsquo;t the thing you do
+instead of the work. It&rsquo;s the maintenance schedule for the one part
+of the work AI can&rsquo;t run.</strong></p>
+<h2>What to do this week</h2>
+<p>Three things, if any of this lands.</p>
+<ol>
+<li>
+<p><strong>Take one piece of rest with real detachment in it — and make it
+   social.</strong> Not an evening doom-scrolling alone; that&rsquo;s not rest,
+   it&rsquo;s a different screen. One meal, walk, or coffee with a human
+   where the deal is no shop talk and no checking the build. Detached
+   <em>and</em> with people — that&rsquo;s the combination that refills you. Treat
+   it like an engine inspection. Put it on the schedule. Don&rsquo;t skip
+   it because the sprint is tight. The sprint is always tight.</p>
+</li>
+<li>
+<p><strong>Take one stuck-moment to a person instead of the agent.</strong> Not
+   because the agent would answer worse — it might answer better. Do
+   it because the point was never just the answer; it&rsquo;s the deposit.
+   You ask, they help, the account grows. Pick the colleague you&rsquo;d
+   like to trust more in six months and go be slightly, deliberately
+   vulnerable with them today. You have to use the muscle on purpose
+   now, because the workflow won&rsquo;t make you anymore.</p>
+</li>
+<li>
+<p><strong>If you&rsquo;re at the center of the network, assume you&rsquo;re at risk.</strong>
+   Lots of meetings, lots of threads, copied on everything — that&rsquo;s
+   exactly the profile Gallup found loneliest, and your most senior
+   people fit it too. Being central isn&rsquo;t being connected. Make one
+   real connection this week with <em>no agenda</em> — nothing you want from
+   them — just time with a person you respect, because the
+   relationship is the point. The most connected people in your org
+   are the ones starving, and they&rsquo;re the ones whose judgment your
+   hardest decisions depend on. Feed that.</p>
+</li>
+</ol>
+<p>Go back to the cold open — the week where everything shipped, nothing
+went wrong, and you still ended up depleted and alone. The cost that
+didn&rsquo;t show up on any dashboard. That&rsquo;s the most dangerous kind there
+is: the kind the system can&rsquo;t see and therefore can&rsquo;t defend against.
+You&rsquo;re the only instrument that reads that meter. So read it.</p>
+<p>The agent will let you fly forever. It will never tell you to land.
+That part is on you.</p>
+<p>Land the plane. And then, for the love of everything, go get lunch
+with somebody.</p>
+<hr />
+<h2>Sources</h2>
+<ul>
+<li>Gallup, <em>State of the Global Workplace 2026</em>: <a href="https://www.gallup.com/workplace/349484/state-of-the-global-workplace.aspx">https://www.gallup.com/workplace/349484/state-of-the-global-workplace.aspx</a></li>
+<li>FlexOS summary of Gallup 2026: <a href="https://www.flexos.work/learn/gallups-employee-engagement-2026">https://www.flexos.work/learn/gallups-employee-engagement-2026</a></li>
+<li>McCarthy et al., &ldquo;All the Lonely People,&rdquo; <em>Journal of Management</em> (2026): <a href="https://journals.sagepub.com/doi/full/10.1177/01492063241313320">https://journals.sagepub.com/doi/full/10.1177/01492063241313320</a></li>
+<li>PMC mirror of the loneliness review: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12701760/">https://pmc.ncbi.nlm.nih.gov/articles/PMC12701760/</a></li>
+<li>Amy Edmondson on AI and psychological safety (UNSW BusinessThink): <a href="https://www.businessthink.unsw.edu.au/articles/psychological-safety-amy-edmondson-remote-work-artificial-intelligence">https://www.businessthink.unsw.edu.au/articles/psychological-safety-amy-edmondson-remote-work-artificial-intelligence</a></li>
+<li>Psychology Today, &ldquo;Psychological Safety Drives AI Adoption&rdquo; (Sep 2025): <a href="https://www.psychologytoday.com/us/blog/decisions-decisions/202509/psychological-safety-drives-ai-adoption">https://www.psychologytoday.com/us/blog/decisions-decisions/202509/psychological-safety-drives-ai-adoption</a></li>
+<li>Anthropic, <em>2026 Agentic Coding Trends Report</em>: <a href="https://resources.anthropic.com/2026-agentic-coding-trends-report">https://resources.anthropic.com/2026-agentic-coding-trends-report</a></li>
+<li>U.S. Surgeon General, <em>Our Epidemic of Loneliness and Isolation</em> (2023): <a href="https://www.ncbi.nlm.nih.gov/books/NBK595227/">https://www.ncbi.nlm.nih.gov/books/NBK595227/</a></li>
+<li>Google Project Aristotle summary: <a href="https://psychsafety.com/googles-project-aristotle/">https://psychsafety.com/googles-project-aristotle/</a></li>
+<li>Lencioni, vulnerability-based trust (Five Behaviors): <a href="https://www.fivebehaviors.com/blog/establishing-a-foundation-of-trust/">https://www.fivebehaviors.com/blog/establishing-a-foundation-of-trust/</a></li>
+<li>Stephen M.R. Covey, <em>The Speed of Trust</em>: <a href="https://speedoftrust.com/">https://speedoftrust.com/</a></li>
+<li>APA, seven types of rest: <a href="https://www.apa.org/topics/mental-health/seven-rest-types">https://www.apa.org/topics/mental-health/seven-rest-types</a></li>
+<li>Work-breaks systematic review (recovery science): <a href="https://www.researchgate.net/publication/361913348_Role_of_work_breaks_in_well-being_and_performance_A_systematic_review_and_future_research_agenda">https://www.researchgate.net/publication/361913348_Role_of_work_breaks_in_well-being_and_performance_A_systematic_review_and_future_research_agenda</a></li>
+<li>Psychological detachment study (PMC): <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7596587/">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7596587/</a></li>
+<li>SHRM on sabbaticals and burnout: <a href="https://www.shrm.org/topics-tools/news/benefits-compensation/sabbaticals-solution-to-employee-burnout">https://www.shrm.org/topics-tools/news/benefits-compensation/sabbaticals-solution-to-employee-burnout</a></li>
+</ul>
+</article>
+<a class="back-link" href="../../">← all episodes</a>
+
+<footer>
+<p>Land the Plane is rendered with local TTS from
+<a href="https://github.com/puremunky/land-the-plane">this open repo</a>.
+Subscribe in any podcast app via <a href="../../feed.xml">the RSS feed</a>.</p>
+</footer>
+</div>
+</body>
+</html>
