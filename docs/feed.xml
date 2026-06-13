@@ -10,7 +10,7 @@
     <language>en-us</language>
     <copyright>© 2026 Land the Plane</copyright>
     <description>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</description>
-    <lastBuildDate>Sun, 31 May 2026 00:06:34 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 13 Jun 2026 02:54:19 +0000</lastBuildDate>
     <itunes:author>Land the Plane</itunes:author>
     <itunes:summary>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</itunes:summary>
     <itunes:owner>
@@ -20,6 +20,349 @@
     <itunes:image href="https://puremunky.github.io/land-the-plane/cover.png"/>
     <itunes:category text="Technology"/>
     <itunes:explicit>false</itunes:explicit>
+    <item>
+      <title>Pilot Monitoring</title>
+      <link>https://puremunky.github.io/land-the-plane/episodes/003-new-code-review/</link>
+      <guid isPermaLink="false">land-the-plane-003</guid>
+      <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
+      <description>The agent writes the code now, which means the load-bearing human act has quietly moved from writing to reviewing. But review just changed shape underneath us. The line-by-line nitpicking we called &quot;code review&quot; is becoming the bot's job — and the bot is better at it. What's left for the human is the part a model structurally cannot do: understand what it's approving, and be willing to say, out loud, &quot;I don't get this, walk me through it.&quot; This episode argues that code review was never really about catching typos. It was a social act of distributed understanding — and in the agentic era it becomes the load-bearing wall of the whole system.</description>
+      <content:encoded><![CDATA[<h1>Pilot Monitoring</h1>
+<p><em>When the agent writes the first draft, your job stops being to fly the plane and starts being to watch the instruments — and watching is the harder job.</em></p>
+<p><em>Published 2026-06-13. The audio version of this piece is
+<a href="./episode.mp3">Land the Plane episode 3</a>; this post covers the same
+ground for people who&rsquo;d rather read.</em></p>
+<hr />
+<h2>This week on the radar</h2>
+<p>Four things from the last little while.</p>
+<p><strong>The vendors are saying the quiet part out loud: review is the bottleneck.</strong>
+In March, Anthropic shipped
+<a href="https://claude.com/blog/code-review">code review inside Claude Code</a>, and the
+framing is the whole reason for this piece: <em>&ldquo;code review has become a
+bottleneck.&rdquo;</em> The company building the thing that writes the code is telling
+you the slow part is now the looking-at-it part. And they put numbers on it:
+after turning it on internally, the share of pull requests getting a
+substantive review comment went from <strong>16% to 54%</strong>
+(<a href="https://www.infoq.com/news/2026/04/claude-code-review/">InfoQ</a>). Read that
+honestly — before the bot, nearly five out of six PRs were waved through with
+nobody saying anything real. That was the <em>baseline</em>. That&rsquo;s the quiet scandal
+under this whole topic.</p>
+<p><strong>More than one in five reviews on GitHub are now done by a machine.</strong>
+GitHub says Copilot code review crossed
+<a href="https://github.blog/ai-and-ml/github-copilot/60-million-copilot-code-reviews-and-counting/">60 million reviews by March 2026</a>,
+up ~10x in under a year, and now accounts for more than <strong>one in five</strong> code
+reviews on the platform — averaging 5.1 comments per review. So if you picture
+&ldquo;the reviewer&rdquo; as a person, update the picture. Increasingly the first
+reviewer — sometimes the only one — is a model. The machine writes the draft,
+a different machine reviews it, and somewhere at the end there&rsquo;s supposed to be
+a human.</p>
+<p><strong>DORA: AI doesn&rsquo;t fix or break your system — it amplifies it.</strong> The
+<a href="https://dora.dev/dora-report-2025/">DORA 2025 report</a> has the line I can&rsquo;t
+stop quoting: AI-generated code often passes code review just fine, and <em>&ldquo;by
+the time you notice the architectural rot, it&rsquo;s embedded throughout your
+codebase&rdquo;</em>
+(<a href="https://www.swarmia.com/blog/dora-2025-report-ai-readiness/">Swarmia summary</a>).
+<em>Passes review.</em> That&rsquo;s the trap in one sentence. The code doesn&rsquo;t fail loudly
+at the gate. It fails quietly, months later, everywhere at once.</p>
+<p><strong>The honest counterweight.</strong>
+<a href="https://simonwillison.net/tags/ai-assisted-programming/">Simon Willison</a> — as
+credible a working voice as exists — has said openly that ~95% of the code he
+uses is model-generated, that for routine tasks he&rsquo;s stopped reviewing every
+line, and he asks the uncomfortable question: is it even <em>responsible</em> to ship
+code you haven&rsquo;t fully read
+(<a href="https://newsletter.pragmaticengineer.com/p/when-ai-writes-almost-all-code-what">Pragmatic Engineer</a>)?
+I want to honor that tension, not pretend it away. Because the answer the
+industry is quietly converging on is: <em>we&rsquo;re going to ship code no single human
+has fully read.</em> That&rsquo;s not hypothetical. That&rsquo;s Tuesday. The question is what
+we do about it.</p>
+<hr />
+<h2>Cold open: the button at 4:50 on a Friday</h2>
+<p>It&rsquo;s 4:50 on a Friday. One pull request between you and the weekend. You open
+it. Fourteen hundred lines. The agent wrote all of it on Wednesday — you kicked
+off the run, went to a meeting, and it came back with a service that, by every
+signal on the screen, works. Tests green. Linter happy. The robot reviewer left
+five comments and they all got addressed. CI is a wall of checkmarks. By every
+dashboard: done.</p>
+<p>And your cursor is hovering over the green <strong>Approve</strong> button.</p>
+<p>Be honest about the next ten seconds. Are you going to read fourteen hundred
+lines at 4:50 on a Friday? You&rsquo;re not. You&rsquo;ll scroll, let your eye snag on a
+function name you recognize, nod, scroll more, see the tests are green, see the
+bot already looked — and click. And it&rsquo;ll be fine. It&rsquo;s almost always fine.
+That&rsquo;s exactly what makes it dangerous.</p>
+<p>Here&rsquo;s what just happened, in the language of a different industry. You didn&rsquo;t
+<em>fly</em> that plane — the autopilot did. Your job, in that moment, was to <em>monitor</em>
+the autopilot: to be the human who notices when the confident, tireless,
+usually-correct machine is confidently, tirelessly wrong. And there&rsquo;s a whole
+field of research — paid for in actual wreckage — about what happens to people
+in that seat. The seat where the machine does the work and the human is just
+supposed to watch.</p>
+<p>It turns out we&rsquo;re terrible at it. Not because we&rsquo;re lazy — because of how
+attention works. When a system is right ninety-nine times, the human stops
+truly checking on the hundredth. The watching decays into the <em>feeling</em> of
+watching. And the whole safety case quietly comes to rest on a person who&rsquo;s no
+longer really there.</p>
+<p>That&rsquo;s the seat you&rsquo;re in when you review agent-written code. This piece is
+about how to actually sit in it.</p>
+<hr />
+<h2>Review was never about the typos</h2>
+<p>Kill an assumption first, because everything depends on it.</p>
+<p>When you picture code review, you picture <em>catching things</em>: a missing null
+check, an off-by-one, a confusing name. The line-by-line hunt for the defect.
+That&rsquo;s what most of us mean by review, what most tools optimized for, and what
+we spent fifteen years making lighter and more drive-by. LGTM. Approve. Move
+on.</p>
+<p>Here&rsquo;s the thing: that version of review — the defect hunt — is the part the
+machine is now genuinely <em>better at than you</em>.</p>
+<p>The Anthropic numbers are specific in a way that matters. On PRs over a
+thousand lines, their reviewer found issues <strong>84%</strong> of the time, ~7.5 per
+change; on PRs under fifty lines it spoke up only <strong>31%</strong> of the time. It scales
+attention with risk. And engineers marked <strong>fewer than 1%</strong> of its findings as
+incorrect. A tireless reviewer that reads every line of a 1,400-line change at
+4:50 on a Friday without getting bored or hungry or having a weekend to get to.
+On the narrow task of finding the defect in the diff, you won&rsquo;t beat that — and
+you should stop trying.</p>
+<p>And this isn&rsquo;t new. It&rsquo;s a <em>return</em>. In 1976, Michael Fagan at IBM formalized
+the <a href="https://graphite.com/blog/the-ancient-origins-of-code-review">software inspection</a>:
+a rigorous, slow, multi-person, multi-pass read with defined roles. It worked
+extraordinarily well — Fagan inspections caught on the order of <strong>82%</strong> of
+defects, far more per thousand lines than testing. Then we mostly <em>stopped</em>,
+because humans were the expensive, slow part, and we spent two decades making
+review lighter to get them out of the bottleneck. We went from the Fagan
+inspection to the GitHub thumbs-up, and called the lightweight thing &ldquo;modern
+code review.&rdquo;</p>
+<p>Now the rigorous, every-line inspection is coming back — rebuilt in silicon.
+What Anthropic and GitHub shipped isn&rsquo;t really new; it&rsquo;s the Fagan inspection
+reborn as a machine that doesn&rsquo;t get tired. We&rsquo;re getting 1976&rsquo;s rigor back, for
+free, exactly when we&rsquo;d lost the ability to provide it ourselves. That&rsquo;s
+genuinely good news. Say it plainly before complicating it.</p>
+<p>So if the bot has taken back the defect hunt, what&rsquo;s review <em>for</em> now?</p>
+<p>The answer is the thing that was always underneath the typo-catching. Go back to
+1971: Gerald Weinberg, <em>The Psychology of Computer Programming</em>, and the idea of
+<a href="https://en.wikipedia.org/wiki/Egoless_programming">egoless programming</a>. His
+actual point — the one we flattened into etiquette — was that the value of
+review was <em>social</em>. The group developed a shared understanding of the code. No
+one person was the only one who knew how a thing worked. The defects were real,
+but the deeper product was <strong>distributed understanding</strong>: a team that had all
+looked at the thing, argued about it, and now carried a shared model of it
+around in their heads.</p>
+<p>That&rsquo;s what review was for. Not the typo. The typo was the <em>occasion</em>. The
+understanding was the <em>point</em>. We never had to separate them, because the same
+act produced both — you read the code line by line and caught the bug and built
+the understanding in one motion.</p>
+<p>The agent just pulled those two apart. It took the defect hunt and does it
+better than you. It left you holding the other half: the understanding. Which it
+<em>cannot</em> do for you, no matter how good it gets, because the understanding has
+to live in a human head to be worth anything. The whole point of it is that a
+person has it.</p>
+<p>So: code review was never really about the typos. It was about a team of humans
+understanding their own system. The machine took the typos. You still have to do
+the understanding. And almost nobody has reorganized their idea of review around
+that split yet.</p>
+<hr />
+<h2>The seat we&rsquo;re bad at sitting in</h2>
+<p>The human&rsquo;s job is shifting from catching the bug to understanding the change.
+The problem: the seat where you watch a machine work and stay sharp enough to
+catch it when it&rsquo;s wrong is a seat human beings are <em>measurably, predictably
+bad at sitting in.</em> We&rsquo;ve known it for decades — just not in our industry.</p>
+<p>The term is <strong>automation complacency</strong> (or automation bias). The foundational
+synthesis is
+<a href="https://journals.sagepub.com/doi/10.1177/0018720810376055">Parasuraman &amp; Manzey (2010)</a>,
+pulling together human-factors work, much of it from aviation. The finding is
+brutally consistent: give a person a reliable automated system to monitor, and
+they monitor it <em>less.</em> Not because they&rsquo;re told to relax — because reliability
+itself breeds complacency. The better the autopilot, the less the human watches,
+so the rare moment it&rsquo;s wrong is precisely the moment the human has checked out.
+The system&rsquo;s strength <em>manufactures</em> the human&rsquo;s weakness. You can&rsquo;t have a
+highly reliable automated partner and an alert human monitor for free; the
+alertness has to be actively, unnaturally maintained against the grain of how
+attention works.</p>
+<p>That&rsquo;s the science of the 4:50-on-Friday Approve button. It&rsquo;s not a character
+flaw. You&rsquo;re a normal human exhibiting a documented response to a reliable
+machine — working properly toward a catastrophe, because the one time in fifty
+that it matters is the one time you&rsquo;re not looking.</p>
+<p>And you can&rsquo;t even trust your <em>own</em> sense of how carefully you looked. That&rsquo;s
+the <a href="https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/">METR study</a>
+from July 2025: experienced open-source developers using AI <em>believed</em> they were
+~20% faster. They were actually ~19% <em>slower</em> — wrong about their own experience
+by nearly forty points. Now sit that next to review. If you can&rsquo;t trust an
+engineer&rsquo;s gut about whether AI made them faster, why trust their gut about
+&ldquo;yeah, I reviewed it, it&rsquo;s fine&rdquo;? <em>I reviewed it</em> is not data. It&rsquo;s a feeling.
+And the feeling is exactly what complacency corrupts first.</p>
+<p>Now the shape of the work. <a href="https://www.gitclear.com/ai_assistant_code_quality_2025_research">GitClear</a>
+looked at ~211 million lines: cloned (copy-pasted) code is up (8.3% → 12.3%),
+refactoring is sharply down (25% → under 10%), and churn — code rewritten within
+two weeks — is up (3.1% → 5.7%). More code, more duplication, thrown away
+faster. And <a href="https://jellyfish.co/blog/ai-assisted-pull-requests-are-18-larger/">AI-assisted PRs run ~18% larger</a>.</p>
+<p>Here&rsquo;s where a thirty-year-old number becomes the most relevant fact in this
+whole piece. In 2009, the
+<a href="https://static0.smartbear.co/support/media/resources/cc/book/code-review-cisco-case-study.pdf">SmartBear/Cisco study</a> —
+2,500 reviews, millions of lines, for a long time the largest ever — found that
+human defect detection falls off a cliff past about <strong>400 lines</strong>. The sweet
+spot is 200–400 lines, reviewed slowly
+(<a href="https://mikeconley.ca/blog/2009/09/14/smart-bear-cisco-and-the-largest-study-on-code-review-ever/">summary</a>).
+Four hundred lines is roughly the ceiling of what a person can review <em>well.</em></p>
+<p>Put the two facts in one sentence. Humans top out, on a good day, around 400
+lines. The agent routinely drops 1,400-line changes on you. We&rsquo;ve built a
+pipeline that generates work in exactly the size and shape human review is
+known — measured, since 2009 — to be worst at. We didn&rsquo;t just speed up the
+writing; we sped it up into a form factor that <em>defeats the reading.</em> A
+thousand-line PR isn&rsquo;t one review. Functionally it&rsquo;s a defect-laundering
+machine, because everyone knows nobody&rsquo;s really reading all of it, and the green
+button gets pressed anyway.</p>
+<p>That&rsquo;s the DORA warning made mechanical: the code passes review not because it&rsquo;s
+good but because the review, at that size and speed and level of complacency,
+<em>isn&rsquo;t actually happening.</em> It&rsquo;s being performed. The practitioner writing has a
+phrase for it I think is exactly right — AI
+<a href="https://medium.com/analysts-corner/code-reviews-rubber-stamps-%EF%B8%8F-or-real-quality-gates-dab98cca0a81"><em>&ldquo;accelerates the rubber-stamp effect, creating the illusion of rigor while
+hollowing out collaborative learning.&rdquo;</em></a>
+The <strong>illusion of rigor</strong>: green checks, a bot&rsquo;s five comments, an Approve from
+a human who scrolled. It has the complete outward form of rigor. And underneath,
+no human understands the change. It doesn&rsquo;t announce itself, because everything
+about it looks like success.</p>
+<hr />
+<h2>The one thing the machine cannot do</h2>
+<p>If you&rsquo;re slightly worried now, good — but worry without a move is just anxiety.
+Here&rsquo;s the move.</p>
+<p>If the bot catches defects better than you, the seat makes you complacent, and
+the work arrives in a size built to defeat you, then trying to out-read the
+machine is a losing game. Don&rsquo;t try to be a better defect hunter than the
+tireless one. Instead, do the one thing in this system a machine structurally
+<em>cannot</em> do.</p>
+<p>Understand the change. And when you don&rsquo;t — <strong>say so, out loud, to another
+human.</strong></p>
+<p>That&rsquo;s the whole irreducible core of human review in the agentic era. Not &ldquo;did I
+find the bug&rdquo; — the bot found the bug. The question is: <em>do I actually
+understand what this code does, why it exists, whether it should exist, and
+whether it&rsquo;s solving the right problem — and if I don&rsquo;t, am I willing to be the
+person in the room who says so.</em></p>
+<p>Notice how different that is from the old job. The old reviewer&rsquo;s core skill was
+<em>vigilance.</em> The new one&rsquo;s is closer to <em>honesty under social pressure</em>: the
+willingness to look at 1,400 lines the tests pass on and the bot blessed and
+your tired Friday brain wants to approve, and type — <em>I don&rsquo;t understand what&rsquo;s
+happening in this module, walk me through it.</em> Or, <em>why does this exist at all.</em>
+Or, <em>I see what it does, I don&rsquo;t see why, and I&rsquo;m not approving until someone can
+tell me.</em></p>
+<p>That&rsquo;s a <strong>vulnerability act.</strong> Saying &ldquo;I don&rsquo;t understand this&rdquo; is admitting,
+in front of your peers, that you don&rsquo;t know something — about code a machine
+wrote, that everyone else is also quietly pretending to understand. Whether you
+<em>can</em> do that depends entirely on whether it&rsquo;s <em>safe</em> to. Which is where the
+last two episodes were pointing.</p>
+<p>Run all three together, because they&rsquo;re one argument. <a href="../001-intent-layer/post.md">Episode
+one</a>: psychological safety became the critical
+path, because catching bad agent output requires someone able to say <em>this is
+wrong</em> without punishment. <a href="../002-invest-in-people/post.md">Episode two</a>: that
+safety grows out of trust, built off the keyboard in real human time. <strong>Episode
+three is where it all gets spent.</strong> Code review is the specific, concrete event
+where the safety and the trust either show up and do their job — or don&rsquo;t. It&rsquo;s
+a person, looking at a diff, deciding whether to admit they don&rsquo;t understand it.
+The whole edifice of trust and safety exists to make one sentence sayable: <em>I
+don&rsquo;t understand this. Explain it to me.</em></p>
+<p>And here&rsquo;s why it&rsquo;s load-bearing, not just nice. The only failure mode AI review
+genuinely <em>cannot</em> catch is a human silently approving code no one in the room
+understands. The bot can find your null pointer. It cannot find three engineers
+clicking Approve while privately having no idea why the change works. There&rsquo;s no
+linter for collective pretending, no CI check for <em>nobody actually understands
+this.</em> That gap — between the team&rsquo;s real understanding and the code now running
+in production — is invisible to every automated system you can buy, because they
+all look at the <em>code</em>, and the gap is in the <em>people.</em> It only becomes visible
+at 2 a.m., in the incident, when &ldquo;who understands this system?&rdquo; turns out to
+have the answer: <em>nobody.</em> The machine wrote it, the machine reviewed it, the
+humans rubber-stamped it, and now it&rsquo;s on fire and there&rsquo;s no one to ask.</p>
+<p>There&rsquo;s one more cost, the one I think we&rsquo;ll regret most, because it compounds
+quietly. Back to Weinberg&rsquo;s real point: distributed understanding. Review always
+did a second thing we barely noticed because it came free — it <em>taught people.</em>
+The junior learned by being reviewed; the senior learned the junior&rsquo;s corner by
+reviewing it. Every review was a small, two-way transfer of knowledge. For a lot
+of how engineers actually grow, that was the main event. When bug-finding moves
+to the bot, the transfer doesn&rsquo;t move with it. Defect detection survives — it&rsquo;s
+better than ever. But the <strong>learning loop</strong> gets cut. You won&rsquo;t feel it this
+quarter. You&rsquo;ll feel it in two years, when you have a group of people who ship a
+great deal of code, understand a shrinking fraction of it, and have stopped
+teaching each other — because the occasion for teaching got automated into a
+checkmark.</p>
+<p>So, the thesis, plainly: code review was never about catching typos. It was the
+social act where a team came to understand its own system and taught itself in
+the process. The machine took the typos — gladly, and it&rsquo;s welcome to them.
+What&rsquo;s left is the part that was always the actual point, and it&rsquo;s now the
+<strong>load-bearing wall</strong> of the whole enterprise: whether a human, in
+psychological safety, built on trust, is willing to look at what the agent wrote
+and say out loud, before clicking the button — <em>I understand this,</em> or, <em>I
+don&rsquo;t, and I&rsquo;m not approving until I do.</em></p>
+<hr />
+<h2>What to do this week</h2>
+<ol>
+<li>
+<p><strong>Replace one Approve with &ldquo;I don&rsquo;t understand.&rdquo;</strong> Find the review where
+   you&rsquo;d normally just click Approve — tests green, bot already looked, you&rsquo;re
+   tired — and instead write one comment that begins <em>I don&rsquo;t understand.</em> Why
+   does this function exist? What happens here when the input is empty? Walk me
+   through this part. You don&rsquo;t have to find a bug; that was never the point.
+   The point is to convert a private, complacent skim into a public act of
+   actually trying to understand — the only thing that breaks the rubber stamp,
+   and the only thing the machine can&rsquo;t do for you. Notice how unnatural it
+   feels. That feeling is the complacency you&rsquo;ve been swimming in.</p>
+</li>
+<li>
+<p><strong>Put a ceiling back on size.</strong> You&rsquo;re fighting 2009&rsquo;s math with 2026&rsquo;s
+   tooling. If the agent hands you a thousand-line change, that&rsquo;s not a review,
+   it&rsquo;s a rubber stamp with extra steps. Make the agent land its work in pieces
+   a human can hold — a few hundred lines, the size the research says you can
+   genuinely review. Yes, more PRs. Good. The friction is the feature. A
+   reviewable change is one that fits in a person&rsquo;s head; if it doesn&rsquo;t fit,
+   you&rsquo;re not reviewing it, you&rsquo;re performing a review of it — and that
+   difference is the gap that shows up at 2 a.m.</p>
+</li>
+<li>
+<p><strong>(Managers) Stop measuring review by speed.</strong> Time-to-merge, review
+   turnaround, throughput — in the agentic era, optimizing those is optimizing
+   for the rubber stamp. You&rsquo;ll get a beautiful dashboard and a codebase no one
+   understands. Measure the harder thing instead: <em>can the person who approved
+   it explain it?</em> And protect the learning loop on purpose — put two humans on
+   the review of consequential agent-written changes, not for throughput, for
+   the <em>transfer.</em> So understanding stays distributed, somebody still teaches
+   somebody, and in two years you have a team and not just a queue of approvals.</p>
+</li>
+</ol>
+<p>Back to the cold open: 4:50 on a Friday, fourteen hundred green lines, the
+cursor on the button. The agent flew the plane all week, beautifully, and now
+it&rsquo;s on final approach and handing you the controls for the one thing it can&rsquo;t
+do — know whether anyone actually understands where it&rsquo;s taking you. That&rsquo;s the
+seat you&rsquo;re in. Not the one who writes it. The one who has to genuinely
+understand it before it lands, and be brave enough to say when you don&rsquo;t.</p>
+<p>The autopilot will fly forever. It will never once tell you it&rsquo;s lost. That part
+— noticing, and saying so out loud — is on you.</p>
+<p>Land the plane. But read the instruments first.</p>
+<hr />
+<h2>Sources</h2>
+<ul>
+<li>Anthropic, <em>Code Review for Claude Code</em> — https://claude.com/blog/code-review</li>
+<li>InfoQ, on Claude Code review (16% → 54%) — https://www.infoq.com/news/2026/04/claude-code-review/</li>
+<li>IT Pro, &ldquo;Anthropic says code review has become a bottleneck&rdquo; — https://www.itpro.com/software/development/anthropic-says-code-review-has-become-a-bottleneck-this-new-claude-code-feature-aims-to-solve-that</li>
+<li>GitHub, &ldquo;60 million Copilot code reviews and counting&rdquo; — https://github.blog/ai-and-ml/github-copilot/60-million-copilot-code-reviews-and-counting/</li>
+<li>DORA 2025 report — https://dora.dev/dora-report-2025/</li>
+<li>Swarmia, DORA 2025 AI-readiness summary — https://www.swarmia.com/blog/dora-2025-report-ai-readiness/</li>
+<li>Simon Willison, AI-assisted programming — https://simonwillison.net/tags/ai-assisted-programming/</li>
+<li>Pragmatic Engineer, &ldquo;When AI writes almost all the code&rdquo; — https://newsletter.pragmaticengineer.com/p/when-ai-writes-almost-all-code-what</li>
+<li>Addy Osmani, &ldquo;Code Review in the Age of AI&rdquo; — https://addyo.substack.com/p/code-review-in-the-age-of-ai</li>
+<li>Intercom, &ldquo;AI is approving our pull requests&rdquo; — https://www.intercom.com/blog/ai-is-approving-our-pull-requests-heres-how-we-made-it-safe/</li>
+<li>CodeRabbit, &ldquo;AI vs Human Code Generation&rdquo; — https://www.coderabbit.ai/blog/state-of-ai-vs-human-code-generation-report</li>
+<li>GitClear, 2025 AI code quality research — https://www.gitclear.com/ai_assistant_code_quality_2025_research</li>
+<li>Jellyfish, &ldquo;AI-assisted PRs are 18% larger&rdquo; — https://jellyfish.co/blog/ai-assisted-pull-requests-are-18-larger/</li>
+<li>SmartBear/Cisco code review study (PDF) — https://static0.smartbear.co/support/media/resources/cc/book/code-review-cisco-case-study.pdf</li>
+<li>Mike Conley, SmartBear/Cisco study summary — https://mikeconley.ca/blog/2009/09/14/smart-bear-cisco-and-the-largest-study-on-code-review-ever/</li>
+<li>Parasuraman &amp; Manzey, &ldquo;Complacency and Bias in Human Use of Automation&rdquo; (2010) — https://journals.sagepub.com/doi/10.1177/0018720810376055</li>
+<li>Automation bias (overview) — https://en.wikipedia.org/wiki/Automation_bias</li>
+<li>METR, early-2025 AI experienced-developer study — https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/</li>
+<li>Egoless programming (Weinberg) — https://en.wikipedia.org/wiki/Egoless_programming</li>
+<li>Graphite, &ldquo;The ancient origins of code review&rdquo; (Fagan inspections) — https://graphite.com/blog/the-ancient-origins-of-code-review</li>
+<li>Analyst&rsquo;s Corner, &ldquo;Code Reviews: Rubber Stamps or Real Quality Gates&rdquo; — https://medium.com/analysts-corner/code-reviews-rubber-stamps-%EF%B8%8F-or-real-quality-gates-dab98cca0a81</li>
+</ul>]]></content:encoded>
+      <enclosure url="https://puremunky.github.io/land-the-plane/episodes/003-new-code-review/episode.mp3" length="18820120" type="audio/mpeg"/>
+      <itunes:duration>26:08</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+      <itunes:author>Land the Plane</itunes:author>
+      <itunes:subtitle>When the agent writes the first draft, your job stops being to fly the plane and starts being to watch the instruments — and watching is the harder job.</itunes:subtitle>
+      <itunes:summary>The agent writes the code now, which means the load-bearing human act has quietly moved from writing to reviewing. But review just changed shape underneath us. The line-by-line nitpicking we called &quot;code review&quot; is becoming the bot's job — and the bot is better at it. What's left for the human is the part a model structurally cannot do: understand what it's approving, and be willing to say, out loud, &quot;I don't get this, walk me through it.&quot; This episode argues that code review was never really about catching typos. It was a social act of distributed understanding — and in the agentic era it becomes the load-bearing wall of the whole system.</itunes:summary>
+    </item>
     <item>
       <title>Crew Rest</title>
       <link>https://puremunky.github.io/land-the-plane/episodes/002-invest-in-people/</link>
