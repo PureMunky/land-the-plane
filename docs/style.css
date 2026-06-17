@@ -77,6 +77,17 @@ article blockquote {
   color: var(--muted);
 }
 article hr { border: 0; border-top: 1px solid var(--rule); margin: 36px 0; }
+.discuss {
+  background: rgba(143, 184, 255, 0.07);
+  border: 1px solid rgba(143, 184, 255, 0.25);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 40px 0 8px;
+  font-size: 15px;
+  color: var(--muted);
+}
+.discuss strong { color: var(--text); }
+.discuss a { font-weight: 600; }
 .back-link {
   display: inline-block;
   margin-top: 32px;

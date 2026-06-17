@@ -1,6 +1,8 @@
 # Episode NNN — Working title
 
 **Subtitle:** One line of what this episode argues.
+**Topics:** comma, separated, topic, tags (used to pre-fill the episode's
+"comment on GitHub" link as labels)
 **Target length:** ~30 minutes (~5,000 words at solo pacing).
 **Voice:** Host of Land the Plane — first person, opinionated, weekly cadence
 with a news segment up top.

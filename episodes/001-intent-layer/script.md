@@ -1,6 +1,7 @@
 # Episode 001 — When the Planes Don't Land
 
 **Subtitle:** Intent, agents, and the coming reshape of engineering work.
+**Topics:** intent layer, psychological safety, AI-assisted development, engineering leadership
 **Published:** 2026-05-23
 **Summary:** Karpathy moves to Anthropic, GitHub Spec Kit reframes the
 source of truth, and Thoughtworks warns about cognitive debt. The main
