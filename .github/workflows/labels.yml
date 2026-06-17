@@ -1,0 +1,40 @@
+name: Ensure episode comment labels
+
+# Episode pages link to GitHub's new-issue screen with labels pre-filled
+# (episode-comment, episode-NNN, topic:<slug>). GitHub only applies a
+# pre-filled label if it already exists, so whenever an episode.json is
+# pushed we create/refresh that episode's labels here — server-side, with
+# the built-in GITHUB_TOKEN. This means publishing from any environment
+# (including ones without the gh CLI) keeps the comment links working.
+
+on:
+  push:
+    paths:
+      - "episodes/**/episode.json"
+      - "scripts/ensure_labels.py"
+      - ".github/workflows/labels.yml"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+concurrency:
+  group: ensure-labels
+  cancel-in-progress: false
+
+jobs:
+  ensure-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Ensure labels for every episode
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          shopt -s nullglob
+          metas=(episodes/*/episode.json)
+          [ ${#metas[@]} -eq 0 ] && { echo "No rendered episodes."; exit 0; }
+          python3 scripts/ensure_labels.py "${metas[@]}"

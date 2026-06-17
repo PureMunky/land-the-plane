@@ -31,7 +31,11 @@ Steps:
    episode" link pre-fills (`episode-comment`, `episode-NNN`, and a
    `topic:<slug>` for each declared topic) so they auto-apply when a
    listener files an issue. It's idempotent and never blocks the
-   publish — if `gh` isn't installed or authenticated it just warns.
+   publish. Locally it uses `gh`; in environments without `gh` it
+   warns and skips — that's fine, because the
+   `.github/workflows/labels.yml` workflow re-runs the same script
+   server-side on every push that touches an `episode.json`, so the
+   labels always get created once this lands on GitHub.
 
 5. Show the user `git status` and `git diff --stat`. Confirm what will
    be committed — at minimum:

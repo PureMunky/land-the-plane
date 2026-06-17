@@ -12,22 +12,37 @@ For episode NNN with topics [a, b, ...] this ensures:
     topic:<slug>       one per declared topic
 
 Usage:
-    python3 scripts/ensure_labels.py episodes/003-new-code-review
+    python3 scripts/ensure_labels.py episodes/003-new-code-review [more...]
     python3 scripts/ensure_labels.py episodes/003-new-code-review/episode.json
 
-Requires the GitHub CLI (`gh`), authenticated against the repo. If `gh`
-is missing or a label can't be created, this prints a warning and still
-exits 0 so it never blocks a release — the comment links keep working,
-the labels just won't auto-apply until the labels exist.
+Two backends, picked automatically:
+  * REST API — used when a token is in the environment (GITHUB_TOKEN or
+    GH_TOKEN). This is how the labels workflow creates them server-side
+    on every push, so publishing from an environment without `gh` (such
+    as Claude Code on the web) still gets labels. The repo comes from
+    GITHUB_REPOSITORY, falling back to DEFAULT_REPO.
+  * gh CLI — used for local publishing when no token is set but `gh` is
+    installed and authenticated.
+
+If neither is available, this prints a warning and exits 0 so it never
+blocks a release — the comment links keep working, the labels just
+won't auto-apply until they exist.
 """
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
 import sys
+import urllib.error
+import urllib.parse
+import urllib.request
 from pathlib import Path
+
+# Keep in sync with scripts/build_site.py:GITHUB_REPO.
+DEFAULT_REPO = "puremunky/land-the-plane"
 
 
 def topic_label(topic: str) -> str:
@@ -60,41 +75,100 @@ def resolve_meta_path(arg: str) -> Path:
     return p / "episode.json" if p.is_dir() else p
 
 
+# --- backends ---------------------------------------------------------------
+
+def ensure_via_gh(name: str, color: str, desc: str) -> tuple[bool, str]:
+    # --force updates an existing label's color/description, so this is
+    # fully idempotent and safe to re-run on every publish.
+    result = subprocess.run(
+        ["gh", "label", "create", name,
+         "--color", color, "--description", desc, "--force"],
+        capture_output=True, text=True,
+    )
+    return result.returncode == 0, result.stderr.strip()
+
+
+def _api_request(method: str, url: str, token: str, payload: dict):
+    data = json.dumps(payload).encode()
+    req = urllib.request.Request(url, data=data, method=method)
+    req.add_header("Authorization", f"Bearer {token}")
+    req.add_header("Accept", "application/vnd.github+json")
+    req.add_header("X-GitHub-Api-Version", "2022-11-28")
+    req.add_header("Content-Type", "application/json")
+    return urllib.request.urlopen(req)
+
+
+def ensure_via_api(repo: str, token: str):
+    base = f"https://api.github.com/repos/{repo}/labels"
+
+    def ensure(name: str, color: str, desc: str) -> tuple[bool, str]:
+        body = {"name": name, "color": color, "description": desc}
+        try:
+            _api_request("POST", base, token, body)
+            return True, ""
+        except urllib.error.HTTPError as e:
+            if e.code == 422:  # already exists — update color/description
+                url = f"{base}/{urllib.parse.quote(name)}"
+                try:
+                    _api_request("PATCH", url, token,
+                                 {"new_name": name, "color": color,
+                                  "description": desc})
+                    return True, ""
+                except urllib.error.HTTPError as e2:
+                    return False, f"{e2.code} {e2.read().decode()[:200]}"
+            return False, f"{e.code} {e.read().decode()[:200]}"
+        except urllib.error.URLError as e:
+            return False, str(e.reason)
+
+    return ensure
+
+
+# --- driver -----------------------------------------------------------------
+
 def main(argv: list[str]) -> int:
-    if len(argv) != 1:
-        print("Usage: ensure_labels.py <episode-dir|episode.json>",
+    if not argv:
+        print("Usage: ensure_labels.py <episode-dir|episode.json> [more...]",
               file=sys.stderr)
         return 2
 
-    meta_path = resolve_meta_path(argv[0])
-    if not meta_path.exists():
-        print(f"No episode.json at {meta_path} "
+    meta_paths = [resolve_meta_path(a) for a in argv]
+    missing = [str(p) for p in meta_paths if not p.exists()]
+    if missing:
+        print(f"No episode.json at: {', '.join(missing)} "
               f"(run scripts/generate.py first)", file=sys.stderr)
         return 1
 
-    if shutil.which("gh") is None:
-        print("warning: gh CLI not found; skipping label creation. "
-              "Install + auth gh, then re-run "
-              f"`python3 scripts/ensure_labels.py {argv[0]}`.",
-              file=sys.stderr)
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if token:
+        repo = os.environ.get("GITHUB_REPOSITORY") or DEFAULT_REPO
+        ensure = ensure_via_api(repo, token)
+        print(f"Ensuring labels via GitHub API on {repo}")
+    elif shutil.which("gh") is not None:
+        ensure = ensure_via_gh
+        print("Ensuring labels via gh CLI")
+    else:
+        print("warning: no GITHUB_TOKEN and no gh CLI; skipping label "
+              "creation. The comment links still work; labels just won't "
+              "auto-apply until they exist.", file=sys.stderr)
         return 0
 
-    meta = json.loads(meta_path.read_text())
+    # De-duplicate across episodes so shared labels (episode-comment,
+    # repeated topics) are only touched once.
+    seen: set[str] = set()
     failures = 0
-    for name, color, desc in labels_for(meta):
-        # --force updates an existing label's color/description, so this
-        # is fully idempotent and safe to re-run on every publish.
-        result = subprocess.run(
-            ["gh", "label", "create", name,
-             "--color", color, "--description", desc, "--force"],
-            capture_output=True, text=True,
-        )
-        if result.returncode == 0:
-            print(f"  ensured label {name}")
-        else:
-            failures += 1
-            print(f"  warning: could not ensure label {name}: "
-                  f"{result.stderr.strip()}", file=sys.stderr)
+    for meta_path in meta_paths:
+        meta = json.loads(meta_path.read_text())
+        for name, color, desc in labels_for(meta):
+            if name in seen:
+                continue
+            seen.add(name)
+            ok, err = ensure(name, color, desc)
+            if ok:
+                print(f"  ensured label {name}")
+            else:
+                failures += 1
+                print(f"  warning: could not ensure label {name}: {err}",
+                      file=sys.stderr)
 
     if failures:
         print(f"warning: {failures} label(s) could not be ensured; the "
