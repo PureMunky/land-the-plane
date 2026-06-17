@@ -29,12 +29,17 @@ import sys
 from datetime import datetime, timezone
 from email.utils import format_datetime
 from pathlib import Path
+from urllib.parse import urlencode
 
 import markdown
 
 ROOT = Path(__file__).parent.parent
 EPISODES_DIR = ROOT / "episodes"
 DOCS_DIR = ROOT / "docs"
+
+# The repo that hosts this show. Episode pages link here to let listeners
+# file comments as GitHub issues (see new_issue_url).
+GITHUB_REPO = "puremunky/land-the-plane"
 
 # Override at build time: BASE_URL=https://example.com/foo python scripts/build_site.py
 BASE_URL = os.environ.get(
@@ -147,6 +152,17 @@ article blockquote {
   color: var(--muted);
 }
 article hr { border: 0; border-top: 1px solid var(--rule); margin: 36px 0; }
+.discuss {
+  background: rgba(143, 184, 255, 0.07);
+  border: 1px solid rgba(143, 184, 255, 0.25);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 40px 0 8px;
+  font-size: 15px;
+  color: var(--muted);
+}
+.discuss strong { color: var(--text); }
+.discuss a { font-weight: 600; }
 .back-link {
   display: inline-block;
   margin-top: 32px;
@@ -254,6 +270,49 @@ def render_home(episodes: list[dict]) -> str:
     return render_layout(SHOW["title"], body, is_root=True)
 
 
+def topic_label(topic: str) -> str:
+    """Turn a free-text topic into a GitHub-label-friendly slug."""
+    slug = re.sub(r"[^a-z0-9]+", "-", topic.lower()).strip("-")
+    return f"topic:{slug}" if slug else ""
+
+
+def new_issue_url(ep: dict) -> str:
+    """Build a GitHub "new issue" URL that pre-fills the title, body, and
+    labels so a listener can comment on a specific episode in one click.
+
+    The episode number lands in the title and body; any declared topics
+    land in the body and as `topic:<slug>` labels. Labels are applied only
+    if they already exist in the repo, so the link works regardless.
+    """
+    n = ep.get("number", 0)
+    title = ep.get("title", "")
+    slug = ep["slug"]
+    ep_url = f"{BASE_URL}/episodes/{slug}/"
+    topics = ep.get("topics", []) or []
+
+    body_lines = [f"**Episode:** {n:03d} — {title}"]
+    if topics:
+        body_lines.append(f"**Topics:** {', '.join(topics)}")
+    body_lines += [
+        f"**Listen / read:** {ep_url}",
+        "",
+        "---",
+        "",
+        "<!-- Your reaction, pushback, or question goes here. -->",
+        "",
+    ]
+
+    labels = [f"episode-{n:03d}", "episode-comment"]
+    labels += [lbl for lbl in (topic_label(t) for t in topics) if lbl]
+
+    params = {
+        "title": f"Episode {n:03d} — {title}: ",
+        "body": "\n".join(body_lines),
+        "labels": ",".join(labels),
+    }
+    return f"https://github.com/{GITHUB_REPO}/issues/new?{urlencode(params)}"
+
+
 def render_episode_page(ep: dict) -> str:
     md_text = ep["_post_path"].read_text(encoding="utf-8")
     body_html = markdown.markdown(
@@ -272,6 +331,11 @@ def render_episode_page(ep: dict) -> str:
 <article>
 {body_html}
 </article>
+<aside class="discuss">
+<p><strong>Got a reaction?</strong> Comments live as GitHub issues.
+<a href="{html.escape(new_issue_url(ep))}">Open a comment on this episode →</a>
+The episode number and topics come pre-filled; just add your take.</p>
+</aside>
 <a class="back-link" href="../../">← all episodes</a>
 """
     return render_layout(

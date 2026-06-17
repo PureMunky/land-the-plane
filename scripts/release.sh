@@ -55,6 +55,9 @@ fi
 echo "==> Building site"
 python3 scripts/build_site.py
 
+echo "==> Ensuring GitHub labels for episode comments"
+python3 scripts/ensure_labels.py "$EP_DIR"
+
 # Pull title + summary out of episode.json for the commit message
 TITLE=$(python3 -c "import json,sys;m=json.load(open('$EP_DIR/episode.json'));print(m.get('title',''))")
 NUMBER=$(python3 -c "import json,sys;m=json.load(open('$EP_DIR/episode.json'));print(f\"{m.get('number',0):03d}\")")

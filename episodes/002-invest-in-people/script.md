@@ -1,6 +1,7 @@
 # Episode 002 — Crew Rest
 
 **Subtitle:** Why time with other humans is the maintenance schedule for the part of the work AI can't run.
+**Topics:** investing in people, team trust, loneliness, engineering leadership
 **Published:** 2026-05-30
 **Summary:** Engagement just hit a fifteen-year low, the loneliest people in the building are the ones at the center of it, and the agent on your screen feels like company without being any. This episode argues that as agents absorb the typing, the scarce input shifts from individual output to the relational capital between people — and that capital gets built off the keyboard, in rest and unhurried human time, not at it. Time with other humans isn't a wellness nicety. It's the maintenance schedule for the one part of the system AI can't run.
 **Target length:** ~30 minutes (~5,000 words at solo pacing).

@@ -1,6 +1,7 @@
 # Episode 003 — Pilot Monitoring
 
 **Subtitle:** When the agent writes the first draft, your job stops being to fly the plane and starts being to watch the instruments — and watching is the harder job.
+**Topics:** code review, AI-assisted development, automation complacency, engineering leadership
 **Published:** 2026-06-13
 **Summary:** The agent writes the code now, which means the load-bearing human act has quietly moved from writing to reviewing. But review just changed shape underneath us. The line-by-line nitpicking we called "code review" is becoming the bot's job — and the bot is better at it. What's left for the human is the part a model structurally cannot do: understand what it's approving, and be willing to say, out loud, "I don't get this, walk me through it." This episode argues that code review was never really about catching typos. It was a social act of distributed understanding — and in the agentic era it becomes the load-bearing wall of the whole system.
 **Target length:** ~30 minutes (~5,000 words at solo pacing).

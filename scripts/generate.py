@@ -47,8 +47,8 @@ TITLE_LINE = re.compile(r"^#\s+Episode\s+(\d+)\s*[—-]\s*(.+)$")
 
 
 def parse_metadata(path: Path) -> dict:
-    """Extract title, episode number, subtitle, published date, and summary
-    from the script's top-of-file metadata block."""
+    """Extract title, episode number, subtitle, published date, optional
+    topics, and summary from the script's top-of-file metadata block."""
     meta: dict = {"slug": path.parent.name}
     summary_parts: list[str] = []
     in_summary = False
@@ -73,6 +73,10 @@ def parse_metadata(path: Path) -> dict:
                 meta["subtitle"] = value
             elif key == "published":
                 meta["published"] = value
+            elif key == "topics":
+                meta["topics"] = [
+                    t.strip() for t in value.split(",") if t.strip()
+                ]
             elif key == "summary":
                 in_summary = True
                 summary_parts = [value] if value else []
