@@ -26,22 +26,29 @@ Steps:
    `docs/index.html`, the per-episode page under
    `docs/episodes/$ARGUMENTS/`, and the RSS feed.
 
-4. Show the user `git status` and `git diff --stat`. Confirm what will
+4. Run `python3 scripts/ensure_labels.py episodes/$ARGUMENTS`. This
+   creates the GitHub labels that the episode's "comment on this
+   episode" link pre-fills (`episode-comment`, `episode-NNN`, and a
+   `topic:<slug>` for each declared topic) so they auto-apply when a
+   listener files an issue. It's idempotent and never blocks the
+   publish — if `gh` isn't installed or authenticated it just warns.
+
+5. Show the user `git status` and `git diff --stat`. Confirm what will
    be committed — at minimum:
    - `episodes/$ARGUMENTS/{script,post,episode.json,episode.mp3}.md`
    - `episodes/INDEX.md`
    - Everything under `docs/`
 
-5. Commit with a message of the form:
+6. Commit with a message of the form:
    ```
    Episode NNN: <title>
 
    <one-sentence summary from episode.json>
    ```
 
-6. Push to the current branch with `git push -u origin HEAD`.
+7. Push to the current branch with `git push -u origin HEAD`.
 
-7. Report:
+8. Report:
    - The commit SHA
    - A reminder that GitHub Pages will redeploy when this lands on
      `main` (the action only runs on `main` for the production
