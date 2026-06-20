@@ -1,0 +1,21 @@
+{
+  "slug": "004-verification-bottleneck",
+  "number": 4,
+  "title": "Holding Pattern",
+  "subtitle": "When the agent writes the code for free, the bottleneck does not vanish \u2014 it moves to verification, and then it keeps climbing upstream until it lands in the one chair only a human can sit in: deciding what \"correct\" even means.",
+  "topics": [
+    "verification",
+    "AI-assisted development",
+    "testing",
+    "theory of constraints",
+    "specifications",
+    "engineering leadership"
+  ],
+  "published": "2026-06-20",
+  "summary": "Last week was the cost of agentic coding. This week is the upside \u2014 told honestly. Agents now write most of the code, and for free, which means generation stopped being the thing that gates how fast you ship. So what gates it now? The answer is verification \u2014 proving the code is actually right \u2014 and the good news, the real upside, is that verification is far more automatable than people think. Agents can write the tests, run the fuzzers, triage their own pull requests. But here is the twist that makes this episode: every time you automate a stage of verification, the bottleneck does not disappear. It climbs one step upstream. And it keeps climbing until it reaches the one node in the whole pipeline that has no machine answer \u2014 deciding what the software is supposed to do in the first place. That is where the work goes now. Not typing. Not even reviewing. Owning the spec.",
+  "duration_seconds": 1629,
+  "duration_hms": "27:08",
+  "mp3_filename": "episode.mp3",
+  "mp3_size_bytes": 19547996,
+  "word_count": 4877
+}
