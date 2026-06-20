@@ -10,7 +10,7 @@
     <language>en-us</language>
     <copyright>© 2026 Land the Plane</copyright>
     <description>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</description>
-    <lastBuildDate>Wed, 17 Jun 2026 00:43:21 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 20 Jun 2026 14:02:41 +0000</lastBuildDate>
     <itunes:author>Land the Plane</itunes:author>
     <itunes:summary>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</itunes:summary>
     <itunes:owner>
@@ -20,6 +20,367 @@
     <itunes:image href="https://puremunky.github.io/land-the-plane/cover.png"/>
     <itunes:category text="Technology"/>
     <itunes:explicit>false</itunes:explicit>
+    <item>
+      <title>Holding Pattern</title>
+      <link>https://puremunky.github.io/land-the-plane/episodes/004-verification-bottleneck/</link>
+      <guid isPermaLink="false">land-the-plane-004</guid>
+      <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
+      <description>Last week was the cost of agentic coding. This week is the upside — told honestly. Agents now write most of the code, and for free, which means generation stopped being the thing that gates how fast you ship. So what gates it now? The answer is verification — proving the code is actually right — and the good news, the real upside, is that verification is far more automatable than people think. Agents can write the tests, run the fuzzers, triage their own pull requests. But here is the twist that makes this episode: every time you automate a stage of verification, the bottleneck does not disappear. It climbs one step upstream. And it keeps climbing until it reaches the one node in the whole pipeline that has no machine answer — deciding what the software is supposed to do in the first place. That is where the work goes now. Not typing. Not even reviewing. Owning the spec.</description>
+      <content:encoded><![CDATA[<h1>Holding Pattern</h1>
+<p><em>When the agent writes the code for free, the bottleneck doesn&rsquo;t vanish — it moves to verification, and then it keeps climbing upstream until it lands in the one chair only a human can sit in: deciding what &ldquo;correct&rdquo; even means.</em></p>
+<p><em>Published 2026-06-20. The audio version of this piece is
+<a href="./episode.mp3">Land the Plane episode 4</a>; this post covers the same
+ground for people who&rsquo;d rather read.</em></p>
+<hr />
+<h2>This week on the radar</h2>
+<p>Four things from the last little while.</p>
+<p><strong>The generation numbers got loud.</strong> In April, Google&rsquo;s CEO said
+<a href="https://devops.com/google-ceo-says-75-of-new-code-is-ai-generated/">75% of new code</a>
+at the company is AI-generated. Microsoft puts its number around
+<a href="https://www.entrepreneur.com/business-news/ai-is-taking-over-coding-at-microsoft-google-and-meta/490896">20–30%</a>;
+a Sonar survey pegs the industry at ~42% of code AI-generated or
+-assisted; and a batch of Y Combinator&rsquo;s W25 startups reported that
+<strong>25% of them had 95%-AI-generated codebases.</strong> Hold these loosely —
+&ldquo;AI-generated&rdquo; is a slippery, self-reported, undefined phrase, and a CEO
+quoting a percentage is marketing, not measurement. But discounted hard,
+the direction is unmistakable. Generation is no longer the expensive
+part. Typing the code is no longer the thing between you and shipping.</p>
+<p><strong>The trust gap didn&rsquo;t move an inch.</strong> Veracode&rsquo;s
+<a href="https://www.veracode.com/blog/spring-2026-genai-code-security/">Spring 2026 GenAI Code Security report</a>
+is the most clarifying number I&rsquo;ve seen all year. Across <em>two years</em> of
+bigger, smarter, supposedly revolutionary models, the share of generated
+code that passes a basic security check has stayed <strong>flat at ~55%</strong> —
+meaning ~45% of AI-generated code ships with a known vulnerability. The
+models got dramatically better at writing code that <em>works</em>. They got
+zero better at writing code that&rsquo;s <em>safe</em>. Veracode&rsquo;s framing: these
+models &ldquo;optimize for usefulness and plausibility, not security.&rdquo;
+<em>Plausibility.</em> The code looks right, compiles, runs, demos — and nearly
+half the time it&rsquo;s carrying a hole. (Independent corroboration: an AppSec
+study found OWASP-Top-10 vulns in
+<a href="https://www.veracode.com/blog/spring-2026-genai-code-security/">25.1% of samples</a>;
+Black Duck&rsquo;s 2026 OSSRA reports mean vulnerabilities per codebase up
+107% year over year.) Functional correctness raced ahead. The
+correctness that <em>matters</em> stayed exactly where it was.</p>
+<p><strong>The robot that writes the plane can also inspect it.</strong> Anthropic&rsquo;s
+Frontier Red Team published work on an agent that doesn&rsquo;t write code — it
+<em>verifies</em> it. It reads a codebase, infers what the code is supposed to
+do, writes <a href="https://red.anthropic.com/2026/property-based-testing/">property-based tests</a>
+to check that, runs them, and reflects to confirm real bugs. Pointed at
+100 popular Python packages, <strong>56% of its bug reports were valid</strong> — and
+of its top-ranked findings, <strong>86% were real.</strong> It found genuine bugs in
+NumPy, SciPy, and Pandas — code thousands of experts have stared at for
+years (<a href="https://arxiv.org/pdf/2510.09907">paper</a>). Patches merged. The
+same agentic technology that writes the code can be turned around and
+pointed at proving it.</p>
+<p><strong>The bottleneck became a product category.</strong>
+<a href="https://www.opslane.com/">Opslane&rsquo;s</a> entire pitch is one sentence:
+<em>agents write the code, Opslane proves it works.</em> It drives a real
+browser against your running app, checks each acceptance criterion, and
+hands you pass/fail with screenshots —
+<a href="https://www.opslane.com/blog/verification-bottleneck">before you push</a>.
+A whole company now exists to sit in the gap between &ldquo;the agent wrote it&rdquo;
+and &ldquo;I trust it.&rdquo; When a startup category forms around a gap, that&rsquo;s the
+market telling you where the pain is. It&rsquo;s not generation. It&rsquo;s <em>proof.</em></p>
+<hr />
+<h2>Cold open: forty planes, one runway</h2>
+<p>Picture a small team. Three engineers. A year ago, three engineers was
+three pairs of hands, and the software you could produce was bounded by
+how fast those three people could type.</p>
+<p>Now the same three, today, each running a couple of agents. On a good
+morning this team of three is effectively a team of nine or twelve, and
+the agents don&rsquo;t tire or break for lunch. By 11 a.m. they&rsquo;ve generated
+forty pull requests. A quarter&rsquo;s worth of last year&rsquo;s output, sitting
+there, green, before lunch.</p>
+<p>Here&rsquo;s the scene I want you to see. It&rsquo;s not triumph. It&rsquo;s a holding
+pattern.</p>
+<p>Those forty PRs can&rsquo;t land — not all at once. There&rsquo;s one runway, and the
+runway is <strong>verification</strong>: actually proving each change is correct, is
+safe, does what it was meant to, and doesn&rsquo;t quietly break something three
+modules over. That runway has throughput. A human can only truly verify so
+much in a day. So the planes stack up and circle. Forty changes in the
+air; a runway that can clear maybe six a day with real confidence.</p>
+<p>The team <em>feels</em> incredibly productive — look at all that output. But
+watch what actually ships, verified and trusted, and the number barely
+moved. They didn&rsquo;t get four times faster. They built a magnificent backlog
+of un-landed work and called it velocity.</p>
+<p>Nobody warned you about this when they sold you the agent. They said
+generation was the bottleneck — they were right, and they removed it. And
+the moment they did, you discovered the bottleneck was never really
+generation. It only <em>looked</em> that way because generation was so slow it hid
+everything behind it. Speed up the writing, and the real constraint — the
+one that was always there — steps out of the shadow.</p>
+<p>The real constraint is <em>proof.</em> This piece is about what you do when proof
+gates everything. There&rsquo;s an old law that tells you exactly what happens
+next — and then a twist the law doesn&rsquo;t prepare you for.</p>
+<hr />
+<h2>The constraint just moved — it didn&rsquo;t leave</h2>
+<p>The law first, because it&rsquo;s older than software and merciless.</p>
+<p>In 1984, Eliyahu Goldratt&rsquo;s business novel <em>The Goal</em> laid out the
+<a href="https://www.tocinstitute.org/theory-of-constraints.html">Theory of Constraints</a>.
+Almost insultingly simple, which is why people keep failing to apply it:
+any system has exactly one bottleneck at a time — one slowest step — and
+the total throughput of the whole system is set by that step. Not the
+average. The slowest stage. <strong>Speed up a step that isn&rsquo;t the bottleneck
+and you produce zero additional throughput.</strong> All you do is pile up
+inventory in front of the real constraint. In a factory it&rsquo;s parts
+stacking against a wall. In our world it&rsquo;s forty PRs circling the runway.</p>
+<p>Now <a href="https://en.wikipedia.org/wiki/Amdahl%27s_law">Amdahl&rsquo;s Law</a>, 1967:
+the speedup from making one part of a process faster is hard-capped by the
+fraction you <em>didn&rsquo;t</em> speed up. If writing code was, say, a quarter of the
+total work of shipping software — and the rest was understanding the
+problem, verifying the solution, integrating, deploying, fixing what broke
+— then making the writing <em>infinitely</em> fast attacks only a quarter of the
+process. Best case, you get maybe 1.3× overall, and then you slam into the
+wall of everything you didn&rsquo;t touch.</p>
+<p>This is why teams report a strange, frustrating thing right now. The
+generation speedup is real — code genuinely appears in seconds — and yet
+the date the feature ships to customers barely moved. No mystery. It&rsquo;s
+Goldratt and Amdahl. You made the non-bottleneck infinitely fast, and the
+bottleneck didn&rsquo;t care. It watched the inventory pile up.</p>
+<p>So where did the bottleneck go? <em>Nowhere.</em> That&rsquo;s the point. It was always
+verification — the proving, the testing, the gaining of justified
+confidence that this code is correct. Verification was always the expensive
+part. It was just <em>hidden</em>, because when writing took two weeks, the two
+days of verifying looked cheap. Now writing takes ten minutes, verifying
+still takes two days, and the two days is suddenly the whole story. The
+cost didn&rsquo;t increase. It got <em>unmasked.</em></p>
+<p>And the economics flip in a way I find genuinely clarifying. When
+generating a line cost real human effort, the cost of software lived in
+generation. Push the cost of a generated line toward zero — roughly where
+we&rsquo;re headed — and the entire remaining cost of software relocates to one
+place: <strong>verification.</strong> If making the thing is free, the whole cost of
+software becomes the cost of <em>proving the thing is right.</em> That&rsquo;s not a
+small shift. It&rsquo;s the economic center of gravity of our field picking
+itself up and moving from writing to proving.</p>
+<p>So: the bottleneck moved from generation to verification. The constraint
+didn&rsquo;t leave — it relocated, and got brutally visible. Most of the industry
+is right here, staring at the holding pattern, wondering why all that speed
+didn&rsquo;t turn into shipping.</p>
+<p>The interesting part — almost nobody&rsquo;s talking about it — is what happens
+when you actually try to <em>fix</em> it.</p>
+<hr />
+<h2>The good news: verification is more automatable than you think</h2>
+<p>Here&rsquo;s the upside. The real one.</p>
+<p>When people hear &ldquo;verification is the bottleneck now,&rdquo; they assume it&rsquo;s
+permanent, because they picture verification as a human reading code, and
+humans read at a fixed speed. If that were true, the small team would be
+stuck in the holding pattern forever.</p>
+<p>It isn&rsquo;t true. Verification is far more automatable than the writing ever
+was. Verification is, at root, <em>checking work against a standard</em> — and
+checking is a more mechanizable act than creating. It&rsquo;s the whole intuition
+behind why some problems are hard to solve but easy to check. Generation is
+creative. Verification is, largely, checkable. And checkable things become
+machines.</p>
+<p>So watch what a serious team does to widen the runway. Not ten more humans
+reading diffs — they <strong>industrialize the proving.</strong></p>
+<p><strong>They write property-based tests.</strong> This is the most important idea here,
+so slow down. A normal test says &ldquo;input 3 → output 6.&rdquo; One example. A
+<a href="https://www.themoonlight.io/en/review/use-property-based-testing-to-bridge-llm-code-generation-and-validation">property-based test</a>
+says something stronger: &ldquo;for <em>any</em> number, the output should always be
+even&rdquo; — and the machine generates a thousand random inputs trying to break
+the rule. You&rsquo;re not checking examples anymore; you&rsquo;re checking
+<em>invariants</em> — properties that hold for all inputs. The output of a sort is
+always sorted. Reverse a list twice, get the original. Claims about the
+<em>shape</em> of correctness.</p>
+<p>Property-based testing is also the perfect answer to the obvious objection:
+<em>if the agent writes the code and also the tests, isn&rsquo;t that circular — the
+fox guarding the henhouse?</em> Great objection. The researchers even named the
+failure mode: the <strong>&ldquo;cycle of self-deception,&rdquo;</strong> where the test inherits the
+exact wrong assumption the code has, so it passes and everyone feels safe
+and the bug sails through. Property tests break the cycle, because to state
+a property — <em>sorting always produces sorted output</em> — the agent commits to
+an independent claim about what correct <em>means.</em> It&rsquo;s not memorizing buggy
+behavior; it&rsquo;s asserting a truth that must hold no matter what, and then a
+fuzzer hammers it with cases the agent never imagined. The invariant lives
+<em>outside</em> the code&rsquo;s own assumptions. That&rsquo;s what breaks the circle.</p>
+<p>Not theoretical: Anthropic&rsquo;s Frontier Red Team result <em>is</em> this technique,
+run by an agent, at scale — inferring properties, writing tests, finding
+real bugs in NumPy, SciPy, Pandas, with 86% of top findings genuine. A
+verification machine built from the same agentic parts as the generation
+machine. And it works.</p>
+<p>It extends to the parts of your system that used to be <em>unverifiable</em> —
+features with a model inside them, where the output is non-deterministic and
+there&rsquo;s no single right answer to assert. A year ago you shipped those on
+vibes and prayer. Now there&rsquo;s a discipline for it: <strong>evals.</strong> You write a
+graded rubric for what &ldquo;good&rdquo; looks like, run the feature against a hundred
+cases, and score it automatically on every change. Verification of the
+fuzziest software we build, turned into a number you can watch. Even the
+unverifiable got verifiable.</p>
+<p>And it extends to <em>triage.</em> A January study of over
+<a href="https://arxiv.org/pdf/2601.00753">33,000 agent-authored PRs</a> built a
+&ldquo;circuit breaker&rdquo; that predicts, from cheap signals available the instant a
+PR is created — file types, patch size — whether it&rsquo;ll be expensive to
+verify, <em>before a human looks</em>, accurately enough to be a real gate. So you
+let a machine sort the planes: these forty land on autopilot, these six need
+a human in the tower, and you spend scarce human verification only where it
+warrants.</p>
+<p>The runway isn&rsquo;t fixed. You can widen it — dramatically — with the same
+automation that created the flood. A small team really can industrialize
+verification and capture the advantage the agents promised: not just generate
+faster, but <em>prove</em> faster, and so <em>ship</em> faster. That&rsquo;s the upside, and
+it&rsquo;s real. The holding pattern is not a life sentence. You can build more
+runway.</p>
+<p>But there&rsquo;s one honest caveat that turns this whole piece, and it comes from
+1969.</p>
+<hr />
+<h2>The chair no machine can sit in</h2>
+<p>In 1969, Edsger Dijkstra wrote one of the most-quoted sentences in our
+field, and almost everyone quotes it without feeling its weight:
+<a href="https://en.wikiquote.org/wiki/Edsger_W._Dijkstra"><em>&ldquo;Program testing can be used to show the presence of bugs, but never to
+show their absence.&rdquo;</em></a></p>
+<p><em>Never to show their absence.</em> Read that against everything in the last
+section. All that beautiful automated verification — property tests,
+fuzzers, browser-driving robots, circuit breakers — every bit of it can
+only ever do <em>one</em> thing: find bugs. It can show the code is wrong. It can
+never prove the code is <em>right.</em> A passing test doesn&rsquo;t mean correct; it
+means <em>not yet caught.</em> Run a million property checks and all you&rsquo;ve earned
+is a million failures to disprove. Verification bounds your risk. It never
+certifies your truth.</p>
+<p>And that crack — that one word, <em>absence</em> — is where the whole thing comes
+apart in the most interesting way. It means the bottleneck has no <em>bottom.</em>
+Watch: you automate a verification stage, you speed it up — and by
+Goldratt&rsquo;s law the constraint doesn&rsquo;t vanish, it moves to the next slowest
+stage. So you automate that one. It moves again. <strong>Every verification stage
+you mechanize hands the bottleneck one step upstream.</strong> The constraint isn&rsquo;t
+sitting still waiting to be solved. It&rsquo;s <em>climbing.</em></p>
+<p>So follow it all the way up and ask the real question: where does it stop?
+When the constraint has climbed past the writing, the unit tests, the
+integration tests, the security scans, the browser checks — where&rsquo;s the one
+stage it can climb to and get <em>stuck</em>, because no machine can do it?</p>
+<p>The answer has a 40-year-old name:
+<a href="https://www.scrum.org/resources/blog/doing-right-thing-right-validation-and-verification"><strong>verification vs. validation</strong></a>.
+Verification asks: <em>are we building the thing right?</em> Does the code match
+the spec? That has a machine answer — you can check code against a spec.
+Validation asks: <em>are we building the right thing?</em> Does this actually solve
+the problem it was meant to? That has <em>no</em> machine answer. To check whether
+the code does the right thing, you must know what the right thing <em>is</em> — and
+that lives only in a human head.</p>
+<p>Make it concrete. The agent builds a function to calculate a refund. Clean
+code. Tests pass. Property checks hold. Security scan green. Every machine
+in your pipeline signs off: built right, matches spec, internally flawless.
+And it refunds the wrong amount, because the spec said <em>refund the full
+purchase price</em> and the business needed <em>minus a restocking fee</em> that nobody
+wrote down. Every verification machine you own says that code is correct.
+And it&rsquo;s wrong. Not buggy — <em>wrong.</em> It does precisely what it was told and
+precisely not what was needed. No test catches it, because the test and the
+code were built from the same flawed understanding of correct. The gap isn&rsquo;t
+in the code. It&rsquo;s between the code and the world — and machines can&rsquo;t see the
+world. Only you can.</p>
+<p>Computer scientists have a sharper name for the bottom of this: the
+<a href="https://dl.acm.org/doi/10.1145/3715107"><strong>oracle problem</strong></a>. In testing, an
+oracle tells you whether an output is correct. The deep, unfixable
+difficulty: for any interesting program, deciding whether an output is
+correct is — verbatim — <em>&ldquo;akin to guessing the intention of the developer
+who wrote the code.&rdquo;</em> There&rsquo;s no test for intention. No fuzzer for &ldquo;what did
+the human actually want.&rdquo; The machine checks code against spec all day. It
+cannot check the spec against your actual desire, because your desire isn&rsquo;t
+written anywhere a machine can read. It&rsquo;s in you.</p>
+<p>This is the grand challenge Microsoft Research named this March, in a
+<a href="https://www.microsoft.com/en-us/research/publication/intent-formalization-a-grand-challenge-for-reliable-coding-in-the-age-of-ai-agents/">paper by Shuvendu Lahiri</a>
+I can&rsquo;t recommend enough. The phrase to leave holding: AI-generated code is
+<strong>&ldquo;plausible by construction, but not correct by construction.&rdquo;</strong> <em>Plausible
+by construction</em> — the model is built to produce code that <em>looks</em> right
+(Veracode&rsquo;s exact word from the news: plausibility). The gap between
+plausible and correct he calls the <strong>&ldquo;intent gap,&rdquo;</strong> which has always
+plagued software but which AI
+<a href="https://arxiv.org/pdf/2603.17150"><em>&ldquo;amplifies to an unprecedented scale&rdquo;</em></a>,
+because now you generate plausible code faster than you can ever specify what
+correct would mean. And the killer line that closes the loop: <em>&ldquo;there is no
+oracle for specification correctness other than the user.&rdquo;</em></p>
+<p>There it is. The chair no machine can sit in. You can automate writing the
+code, testing the code, increasingly reviewing the code. What you <em>cannot</em>
+automate — not because the tech is immature but because it&rsquo;s a logical
+impossibility, an oracle problem, a theorem — is deciding what the software
+is <em>supposed to do</em> in the first place. The constraint climbs and climbs and
+comes to rest, finally and permanently, on <strong>specification.</strong> On intent. On a
+human saying, with enough precision that it can be checked against, <em>here is
+what correct means.</em></p>
+<p>So, the thesis, plainly: the agent didn&rsquo;t eliminate the bottleneck. It
+relocated it — out of your hands, where it was typing, up through
+verification, where it&rsquo;s increasingly the machine&rsquo;s, all the way to the one
+node with no machine oracle. The engineer&rsquo;s job isn&rsquo;t moving from writing
+code to reviewing code. It&rsquo;s moving from writing code to <strong>specifying
+intent.</strong> The most valuable thing you can do in the agentic era is not type,
+and not even check. It&rsquo;s to know, precisely, what you actually want — and say
+it clearly enough that everything downstream, human and machine, can be
+measured against it. The bottleneck became <em>you.</em> The good kind. The you that
+decides what correct means.</p>
+<hr />
+<h2>What to do this week</h2>
+<ol>
+<li>
+<p><strong>Write the acceptance criteria <em>before</em> the agent writes the code.</strong> Not
+   after. Most people prompt, look at what comes back, and then try to decide
+   if they like it — backwards in the exact way the oracle problem predicts,
+   because you&rsquo;re verifying against a standard you never set. Flip it. Spend
+   the first twenty minutes writing, in plain specific language, what <em>done</em>
+   means: what it must do, what it must never do, how you&rsquo;d know it worked.
+   Then generate against that. You&rsquo;ve done the one piece of work no machine
+   can do for you, at the only point where it&rsquo;s cheap — the beginning.
+   <em>Approve the spec, not just the diff.</em></p>
+</li>
+<li>
+<p><strong>Industrialize your verification on purpose — build runway.</strong> If you&rsquo;re a
+   working engineer, this week, <em>genuinely learn property-based testing.</em> It&rsquo;s
+   the highest-return testing skill of the next five years, because it&rsquo;s how
+   you state invariants — claims about what must always be true — and
+   invariants are exactly what survive when a machine writes both the code and
+   the example tests. Stop writing tests that check one input/output; start
+   asserting a property and letting the machine try a thousand times to break
+   it. Let your agents write those tests too — but <em>you</em> decide which
+   properties matter, because choosing the property is a small act of
+   specification, and that part is yours.</p>
+</li>
+<li>
+<p><strong>(Managers) Stop measuring generation.</strong> Lines of code, PRs opened, story
+   points, agent activity — every one measures <em>planes in the air,</em> and planes
+   in the air are worthless. They&rsquo;re inventory: the holding pattern in the
+   costume of progress. Measure <em>landed</em> work — changes specified, verified,
+   and trusted in production. Then the counterintuitive step: <strong>take your best
+   engineers off the keyboard.</strong> The instinct is to point your strongest people
+   at generating more, faster. Exactly wrong. Point them at the top of the
+   river — at specification, at deciding what correct means, at writing the
+   criteria everything else is measured against. That&rsquo;s now the highest-value
+   chair in the building, and it&rsquo;s the one chair you can never automate your
+   way out of needing filled.</p>
+</li>
+</ol>
+<p>Back to the holding pattern: three engineers, forty planes circling, one
+runway. The agent didn&rsquo;t make you a better pilot. It filled your sky with
+traffic and handed you the tower. And the job in the tower was never to fly
+the planes. It was to know where each one is supposed to land — and that, it
+turns out, is the one thing it could never tell you.</p>
+<p>So stop trying to land more planes faster. Get clear on the destination
+first. The whole sky is waiting on you to know where it&rsquo;s going.</p>
+<p>Land the plane. But decide where it&rsquo;s going first.</p>
+<hr />
+<h2>Sources</h2>
+<ul>
+<li>Google CEO: 75% of new code AI-generated — https://devops.com/google-ceo-says-75-of-new-code-is-ai-generated/</li>
+<li>AI coding at Microsoft, Google, Meta (20–30%) — https://www.entrepreneur.com/business-news/ai-is-taking-over-coding-at-microsoft-google-and-meta/490896</li>
+<li>Veracode, Spring 2026 GenAI Code Security report (~55% pass rate, flat) — https://www.veracode.com/blog/spring-2026-genai-code-security/</li>
+<li>Anthropic Frontier Red Team, property-based testing agent — https://red.anthropic.com/2026/property-based-testing/</li>
+<li>Property-based testing agent (paper) — https://arxiv.org/pdf/2510.09907</li>
+<li>Opslane — https://www.opslane.com/</li>
+<li>Opslane, &ldquo;the verification bottleneck&rdquo; — https://www.opslane.com/blog/verification-bottleneck</li>
+<li>Antoine Buteau, &ldquo;agent coding costs hide in review, not generation&rdquo; — https://www.antoinebuteau.com/agent-coding-costs-hide-in-review-not-generation/</li>
+<li>Property-based testing to bridge LLM generation and validation (&ldquo;cycle of self-deception&rdquo;) — https://www.themoonlight.io/en/review/use-property-based-testing-to-bridge-llm-code-generation-and-validation</li>
+<li>Circuit-breaker study, 33,707 agent-authored PRs — https://arxiv.org/pdf/2601.00753</li>
+<li>Goldratt, Theory of Constraints — https://www.tocinstitute.org/theory-of-constraints.html</li>
+<li>Amdahl&rsquo;s Law — https://en.wikipedia.org/wiki/Amdahl%27s_law</li>
+<li>Dijkstra, &ldquo;testing shows the presence, not the absence, of bugs&rdquo; — https://en.wikiquote.org/wiki/Edsger_W._Dijkstra</li>
+<li>Verification vs. validation — https://www.scrum.org/resources/blog/doing-right-thing-right-validation-and-verification</li>
+<li>The oracle problem (test oracles) — https://dl.acm.org/doi/10.1145/3715107</li>
+<li>Microsoft Research, &ldquo;Intent Formalization: A Grand Challenge…&rdquo; (Lahiri) — https://www.microsoft.com/en-us/research/publication/intent-formalization-a-grand-challenge-for-reliable-coding-in-the-age-of-ai-agents/</li>
+<li>Intent Formalization (paper) — https://arxiv.org/pdf/2603.17150</li>
+</ul>]]></content:encoded>
+      <enclosure url="https://puremunky.github.io/land-the-plane/episodes/004-verification-bottleneck/episode.mp3" length="19547996" type="audio/mpeg"/>
+      <itunes:duration>27:09</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+      <itunes:author>Land the Plane</itunes:author>
+      <itunes:subtitle>When the agent writes the code for free, the bottleneck does not vanish — it moves to verification, and then it keeps climbing upstream until it lands in the one chair only a human can sit in: deciding what &quot;correct&quot; even means.</itunes:subtitle>
+      <itunes:summary>Last week was the cost of agentic coding. This week is the upside — told honestly. Agents now write most of the code, and for free, which means generation stopped being the thing that gates how fast you ship. So what gates it now? The answer is verification — proving the code is actually right — and the good news, the real upside, is that verification is far more automatable than people think. Agents can write the tests, run the fuzzers, triage their own pull requests. But here is the twist that makes this episode: every time you automate a stage of verification, the bottleneck does not disappear. It climbs one step upstream. And it keeps climbing until it reaches the one node in the whole pipeline that has no machine answer — deciding what the software is supposed to do in the first place. That is where the work goes now. Not typing. Not even reviewing. Owning the spec.</itunes:summary>
+    </item>
     <item>
       <title>Pilot Monitoring</title>
       <link>https://puremunky.github.io/land-the-plane/episodes/003-new-code-review/</link>

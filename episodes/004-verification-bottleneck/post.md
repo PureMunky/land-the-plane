@@ -228,7 +228,7 @@ warrants.
 
 The runway isn't fixed. You can widen it — dramatically — with the same
 automation that created the flood. A small team really can industrialize
-verification and capture the leverage the agents promised: not just generate
+verification and capture the advantage the agents promised: not just generate
 faster, but *prove* faster, and so *ship* faster. That's the upside, and
 it's real. The holding pattern is not a life sentence. You can build more
 runway.
@@ -347,7 +347,7 @@ decides what correct means.
 
 2. **Industrialize your verification on purpose — build runway.** If you're a
    working engineer, this week, *genuinely learn property-based testing.* It's
-   the highest-leverage testing skill of the next five years, because it's how
+   the highest-return testing skill of the next five years, because it's how
    you state invariants — claims about what must always be true — and
    invariants are exactly what survive when a machine writes both the code and
    the example tests. Stop writing tests that check one input/output; start
