@@ -12,26 +12,19 @@ ground for people who'd rather read.*
 
 Four things from the last little while.
 
-**The organized agentic build event went mainstream — and its shape tells you
-everything.** GitLab ran a big one this spring — opened in February, judged in
-March, with Google Cloud and Anthropic alongside — and roughly **7,000
-developers** took part
-([writeup](https://about.gitlab.com/blog/gitlab-ai-hackathon-2026-meet-the-winners/)).
-Forget the leaderboard and look at the tagline they put on the whole thing:
-*"You Orchestrate. AI Accelerates."* That's a job description. The standout
-build, **LORE**, ran on eight agents coordinated by a router. A single person
-now shows up to one of these and spends the days *conducting,* not typing. The
-format that was always our purest test of *who can build something fast* just
-quietly changed what it's testing.
-
-**The format is already growing its own antibodies.** At an
-[agentic build event in San Francisco](https://semgrep.dev/blog/2025/what-a-hackathon-reveals-about-ai-agent-trends-to-expect-2026/)
-late last year — 250+ developers, 50+ projects in a day — one standout build,
-*Udon Cat,* runs a security scanner over a language model's output *before that
-output ever leaves your browser.* Sit with that: these events now produce tools
-whose entire job is to verify the output of the same kind of agent everyone in
-the room is building with. Even inside the party, somebody already smelled the
-problem. Hold that thought — it's the whole back half of this piece.
+**The job is becoming orchestration.** The cleanest name for the shift comes
+from [Addy Osmani](https://addyosmani.com/blog/code-agent-orchestra/): *conductor
+to orchestrator* — from writing the code yourself to directing a small ensemble
+of agents that write it for you
+([O'Reilly Radar](https://www.oreilly.com/radar/conductors-to-orchestrators-the-future-of-agentic-coding/)).
+The counterintuitive thing the people who've gotten good at this keep reporting:
+a few focused agents, each pointed at one narrow slice, reliably beat one agent
+told to go do everything. Sit with what that means for a team. The valuable human
+skill is no longer typing fast — it's *decomposition and direction:* breaking a
+problem into pieces clean enough to hand out, and conducting the result. The big
+organized builds this spring made it visual — single projects running on eight
+agents coordinated by a router, one person at the podium. The keyboard is
+becoming a baton.
 
 **The data caught up to the vibe.** Anthropic's
 [2026 Agentic Coding Trends report](https://resources.anthropic.com/2026-agentic-coding-trends-report)
@@ -43,21 +36,33 @@ framing of *why* is the sentence I'd staple to this episode — the bottleneck i
 no longer writing code, it's **clarity about what to build.** That's not my
 opinion this week. That's the tooling vendor's own telemetry.
 
-**The counterweight.** A wave of audits this quarter pointed a hard light at
-vibe-coded software — apps built fast, by prompt, often by people who couldn't
-read the code that came out. One
-[commercial audit](https://hatchworks.com/blog/gendd/cost-of-vibe-coding/)
-claimed **>90%** of the vibe-coded apps it examined carried at least one
-AI-traceable vulnerability. Hold that exact number loosely: it's a vendor, the
-methodology isn't fully public, and a scary percentage is good marketing. But
-it *converges* with the academic work — a paper bluntly titled
+**And here's who's picking up the baton.** Vercel's *State of Vibe Coding* data
+puts a number on it:
+[**63% of the people using these AI app-builders aren't developers**](https://www.hostinger.com/blog/vibe-coding-statistics)
+— product, design, marketing, ops, building working software by describing it.
+Hold it honestly: it's a survey of people *already reaching for* an AI builder,
+not a census of the industry — it tells you who's inside the tent, not that
+two-thirds of all software changed hands. (Population-level measured data on
+non-engineers *shipping* doesn't exist yet; don't let anyone tell you it does.)
+But inside the tent, the composition flipped: the people building are, more and
+more, the people who were never allowed to build before. Remember that number
+when we get to the main piece — it's the whole story of who walks through the
+door.
+
+**The counterweight.** [MIT's 2026 *State of AI in Business*](https://venturebeat.com/data/the-last-mile-data-problem-is-stalling-enterprise-agentic-ai-golden)
+produced the most-quoted number in enterprise AI: roughly **95% of GenAI pilots
+never reach production.** They demo, they impress, they earn a budget line, and
+then they die in the gap between the prototype and the real thing. Put that next
+to this quarter's security work — a paper bluntly titled
 [*Is Vibe Coding Safe?*](https://arxiv.org/abs/2512.03262) found that **>80% of
-the functionally correct solutions** — the ones that worked, that would've
-demoed clean — still carried an exploitable vulnerability. Two different
-methods, one pointing at marketing and one at a conference, landed in the same
-place. The thing runs. The thing demos. And four times out of five it's
-carrying a hole. Let's talk about why that's not a coincidence — and why four
-days of agentic building is exactly where it gets manufactured.
+the functionally correct solutions** — the ones that would've demoed clean —
+still carried an exploitable vulnerability. (A
+[commercial audit](https://hatchworks.com/blog/gendd/cost-of-vibe-coding/) put
+the vuln rate north of 90%; treat that one as directional, but note it converges
+with the academic figure.) Two different failures, the same shape: the thing
+runs, the thing demos, and then four times out of five it's either carrying a
+hole or it never lands at all. Let's talk about why that's not a coincidence —
+and why four days of agentic building is exactly where it gets manufactured.
 
 ---
 
@@ -143,6 +148,19 @@ have an idea at 9am and by 10 you know whether you could even *say* it clearly �
 because if you couldn't, the agent built you the wrong thing and you're staring
 at the proof.
 
+And notice what we had to take away to get there. A competition, whatever else
+you make of it, at least validates *something* — a judge picks a winner, and a
+ranking is a crude external check that one thing came out better than another. We
+didn't run a competition. No judge, no prize, no clock pressure forcing anyone's
+hand. And because the agents made *it runs* free, there isn't even a construction
+barrier left to clear. Strip all of that away and you're left with exactly one
+variable still under test: *did this team know what was worth building, and could
+they say it clearly.* That's the purest isolation of intent I've ever watched a
+working process pull off — and it's also (we'll come back to this hard) the
+reason every single thing that comes out the far end is **unvalidated by
+construction.** Nothing in that room was measuring whether the thing was *right.*
+That was never what the room was for.
+
 And that reframe changes who's good at this.
 
 ## The people the keyboard was hiding
@@ -174,12 +192,25 @@ than the hype version. The hype version says *everyone's an engineer now.*
 That's not true and not what I saw. What I saw is narrower and more important:
 people who deeply understand a problem can now produce a working expression of
 the solution without an engineer standing between their intent and the artifact.
-The tooling vendors report the same from their side — people in legal, design,
-and operations building their own small tools without engineering as a
-prerequisite. Be careful with the bigger claims, though: you'll hear that *80% of
-software will soon be built outside the technology department,* and that's a
-[Gartner prediction](https://www.gartner.com/en/newsroom), not a measurement —
-file it as a guess. But the direction is unmistakable.
+And we're not only guessing anymore — remember that
+[Vercel number](https://www.hostinger.com/blog/vibe-coding-statistics) from the
+news: 63% of the people reaching for these builders aren't developers. Hold it
+honestly (it's the people already inside the tent, not the whole industry), but
+it confirms the shape. The tooling vendors report the same — legal, design, ops,
+building their own small tools without an engineer in the loop. The wilder claims
+— *80% of software built outside the technology department* — are
+[predictions](https://www.gartner.com/en/newsroom), not measurements; file those
+as guesses. But the direction isn't a guess.
+
+And here's where the orchestration shift from the top does its quiet, important
+work. A four-day mixed team isn't one engineer typing while everyone else hovers.
+It's the support lead conducting a couple of agents on her slice, an engineer
+conducting three more on the integration, the designer driving the interface —
+every one of them directing, none of them bottlenecked behind a single pair of
+hands. The team stops scaling to the size of its keyboard and starts scaling to
+the size of its intent. Which is exactly why the *mix* matters now in a way it
+couldn't before: you want the most different brains in the room you can find,
+because every one of them can actually build.
 
 Here's the part the tooling story leaves out, and it's the part that matters if
 you run a team: **none of this works without the conditions, and the conditions
@@ -235,13 +266,25 @@ running demos at near-zero cost, shown to people whose every reflex says a
 running demo means the work is basically finished. The demo touches the runway;
 everyone files it as a landing; nobody got off the plane.
 
-Remember the numbers: **>80%** of vibe-coded solutions that *functionally
-worked* still carried an exploitable vulnerability. Read that against what a demo
-shows you. A demo shows you the part that works — the happy path, the thing on
-the screen. A demo is *structurally incapable* of showing you the hole, because
-if the hole showed up in the demo it wouldn't be a hole, it'd be a bug, and
-someone would've fixed it. The demo and the defect live in different rooms. The
-better the demo, the more completely it hides the part that doesn't work.
+Remember the numbers, because now they bite. **~95%** of enterprise GenAI pilots
+never reach production — they demo, then die in the gap between the prototype and
+the real thing. And **>80%** of vibe-coded solutions that *functionally worked*
+still carried an exploitable vulnerability. Read those against what a demo
+actually shows you. A demo shows you the part that works — the happy path, the
+thing on the screen. A demo is *structurally incapable* of showing you the hole,
+because if the hole showed up in the demo it wouldn't be a hole, it'd be a bug,
+and someone would've fixed it. The demo and the defect live in different rooms.
+The better the demo, the more completely it hides the part that doesn't work.
+
+And here's where what we stripped away in Act 1 comes due. No judge, no clock, no
+construction barrier — every validator the old version of this exercise leaned on,
+we pulled out on purpose, because pulling them out is exactly what made it such a
+clean intent lab. But it also means the running thing on the screen passed
+through *zero* validation gates to get there. The prototype that worked in the
+room routinely needs a near-total rebuild before it can survive real users.
+Nobody's lying to you. The room itself is built to manufacture things that look
+finished and aren't — deliberately, for good reason — which is exactly why it's
+so dangerous to trust what walks out of it.
 
 This is the same crack we ended on last week, and it has the same name. There's a
 difference between
@@ -286,9 +329,8 @@ It's genuinely faster discovery of what matters than any planning process gave
 you. But it's *discovery* — the beginning of the work, dressed in the costume of
 the end of it.
 
-There's a useful distinction from
-[Simon Willison](https://simonwillison.net/) between *vibe coding* and *vibe
-engineering.* Vibe coding is what happens in those four days — describe it, watch
+There's a useful distinction from Simon Willison between *vibe coding* and
+[*vibe engineering*](https://simonwillison.net/2025/Oct/7/vibe-engineering/). Vibe coding is what happens in those four days — describe it, watch
 it run, feel the magic, don't look too hard at what came out. Vibe engineering is
 what has to happen after: the same speed, but with the discipline of someone who
 refuses to ship code they couldn't explain to another human, who writes the
@@ -378,14 +420,16 @@ to the gate.
 
 ## Sources
 
-- GitLab AI build event 2026 — winners, ~7,000 developers, "You Orchestrate. AI Accelerates." — https://about.gitlab.com/blog/gitlab-ai-hackathon-2026-meet-the-winners/
-- Semgrep — what an agentic build event reveals (250+ devs, "Udon Cat") — https://semgrep.dev/blog/2025/what-a-hackathon-reveals-about-ai-agent-trends-to-expect-2026/
+- Addy Osmani — "The Code Agent Orchestra" (conductor → orchestrator) — https://addyosmani.com/blog/code-agent-orchestra/
+- O'Reilly Radar — "Conductors to Orchestrators: the future of agentic coding" — https://www.oreilly.com/radar/conductors-to-orchestrators-the-future-of-agentic-coding/
 - Anthropic — 2026 Agentic Coding Trends report (the "delegation gap," ~60% AI involvement) — https://resources.anthropic.com/2026-agentic-coding-trends-report
-- HackerRank "Orchestrate" — what 12,885 developers taught us about building with AI — https://www.hackerrank.com/blog/what-12885-developers-taught-us-about-building-with-ai/
+- Vercel "State of Vibe Coding" — 63% of AI app-builder users are non-developers (via Hostinger roundup; self-selected tool users) — https://www.hostinger.com/blog/vibe-coding-statistics
+- MIT "State of AI in Business" 2026 — ~95% of GenAI pilots never reach production (via VentureBeat) — https://venturebeat.com/data/the-last-mile-data-problem-is-stalling-enterprise-agentic-ai-golden
 - "Is Vibe Coding Safe?" (>80% of functionally correct solutions carried an exploitable vulnerability) — https://arxiv.org/abs/2512.03262
-- Hatchworks — the cost of vibe coding (commercial audit, >90% claim; treat as directional) — https://hatchworks.com/blog/gendd/cost-of-vibe-coding/
+- Hatchworks — the cost of vibe coding (commercial >90% vuln claim, "prototype needs a massive rebuild"; treat as directional) — https://hatchworks.com/blog/gendd/cost-of-vibe-coding/
 - Microsoft Research — "Intent Formalization: A Grand Challenge…" (Lahiri; the "intent gap," "no oracle for specification correctness other than the user") — https://www.microsoft.com/en-us/research/publication/intent-formalization-a-grand-challenge-for-reliable-coding-in-the-age-of-ai-agents/
 - Goldratt, Theory of Constraints — https://www.tocinstitute.org/theory-of-constraints.html
 - Verification vs. validation — https://www.scrum.org/resources/blog/doing-right-thing-right-validation-and-verification
 - Google re:Work — Project Aristotle (psychological safety) — https://rework.withgoogle.com/intl/en/guides/understand-team-effectiveness
-- Simon Willison — vibe coding vs. vibe engineering — https://simonwillison.net/
+- Simon Willison — "Vibe engineering" (Oct 7, 2025) — https://simonwillison.net/2025/Oct/7/vibe-engineering/
+- Simon Willison — "Vibe coding" / the golden rule (Mar 19, 2025) — https://simonwillison.net/2025/Mar/19/vibe-coding/
