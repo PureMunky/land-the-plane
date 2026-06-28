@@ -1,0 +1,22 @@
+{
+  "slug": "005-four-day-build",
+  "number": 5,
+  "title": "Touch and Go",
+  "subtitle": "When agents do the typing, a four-day build stops being about whether you can build the thing and becomes a pure intent exercise \u2014 the best proof you have of what is worth building, and a factory for demos that look done and are not. Those turn out to be the same fact.",
+  "topics": [
+    "agentic workflows",
+    "AI-assisted development",
+    "intent",
+    "specification",
+    "cross-functional teams",
+    "psychological safety",
+    "engineering leadership"
+  ],
+  "published": "2026-06-27",
+  "summary": "Last week the argument was that the bottleneck in agentic development climbs upstream until it lands on intent \u2014 deciding what correct means. This week we test that claim in the most concrete place it shows up: hand a cross-functional team four days and an agentic workflow and ask them to prove what can actually be built. When the agent does the construction, the four-day clock stops measuring whether you can build the thing and starts measuring whether you know what is worth building. The room fills with non-engineers holding running software. And every beautiful demo carries the same quiet defect \u2014 it proves only that someone could describe it plausibly, not that it is right. These four days are the best intent laboratory we have and a factory for plausible-but-unvalidated demos, and the uncomfortable part is that those are the same fact.",
+  "duration_seconds": 1646,
+  "duration_hms": "27:26",
+  "mp3_filename": "episode.mp3",
+  "mp3_size_bytes": 19756766,
+  "word_count": 5236
+}
