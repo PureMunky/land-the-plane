@@ -280,6 +280,17 @@ what's left for engineers once agents can build anything — that's the answer. 
 thing with no oracle. The
 [final approach only a human can fly](https://www.scrum.org/resources/blog/doing-right-thing-right-validation-and-verification).
 
+And here's the sharpest objection, because it's the right one: if specifying intent
+is the whole job now, can't the agent do *that* too? Partly yes — and it's coming
+fast. Point an agent at your usage data, your mission, and a pile of industry
+research and it'll cheerfully generate twenty things you could build next — some
+sharp, some things no human in the room would've thought of. But notice what it
+produced: **candidates.** It flooded the top of the funnel with *plausible* intent.
+It did not — cannot — tell you which of the twenty is the *right* one to build,
+because that's a validation question, and validation has no oracle but you. An agent
+that generates a hundred ideas doesn't shrink your job. It takes the one thing only
+you can do — *choosing, and being able to say why* — and makes it the whole thing.
+
 **The thesis, plainly:** for five episodes the bottleneck climbed — generation,
 verification, intent — and here it stops, permanently, because intent is the one
 node no machine can grade. The whole industry is racing to build an oracle for it
@@ -343,9 +354,13 @@ touch-and-go: each was the constraint climbing one more stair, and this week it
 reached the top and stopped at the one place it can't climb past. Intent. The node
 with no oracle. The only cargo that was ever really yours to carry.
 
-Where we go next is out of the tower and onto the ground — what it actually looks
-like, day to day, to run a team whose real output is intent and not code: how you
-hire for it, measure it, protect it. Until then — specify the thing, capture the
+Where we go next is the strangest turn yet: if the machine can build anything and
+the job that's left is deciding what's *worth* building, then the next place we point
+the agents is at that very question — feed them the usage data, the mission, the
+industry research, and let them surface candidate ideas for the humans to weigh.
+Agents at the *front* of the funnel, generating the intent instead of just executing
+it. It sounds like it breaks everything I said today; I think it does the opposite —
+it makes the human oracle matter *more.* Until then — specify the thing, capture the
 why, and when the machine asks if this is what you meant, *answer.*
 
 ---
