@@ -1,0 +1,22 @@
+{
+  "slug": "006-cleared-to-land",
+  "number": 6,
+  "title": "Cleared to Land",
+  "subtitle": "For five episodes the bottleneck has been climbing upstream. This week it arrives at the one place it cannot climb past \u2014 intent, the single node in the whole pipeline that has no machine oracle. When agents can build anything and check almost anything except whether it was the right thing, the job collapses to one thing: saying what you meant, well enough to be checked, and keeping the saying.",
+  "topics": [
+    "intent layer",
+    "spec-driven development",
+    "AI-assisted development",
+    "verification",
+    "validation",
+    "engineering leadership",
+    "agentic workflows"
+  ],
+  "published": "2026-07-04",
+  "summary": "The plane finally lands. For five episodes the constraint has been moving upstream \u2014 from psychological safety to people to review to verification to last week's four-day build that produced a beautiful, unvalidated demo. This week it reaches the top of the pipeline and stops, because there is nowhere left to go. Intent is the one node no machine can grade. Agents now build the code and increasingly check the code, and the whole industry is racing to give the specification an oracle \u2014 Spec Kit, Kiro, Tessl \u2014 but every one of those tools still terminates at a human saying \"yes, that is what I meant.\" So the engineer's job collapses to three verbs: specify intent, capture it, validate it. And the captured intent \u2014 the conversation, the pivots, the rejected paths \u2014 becomes the one artifact a human still uniquely owns.",
+  "duration_seconds": 1586,
+  "duration_hms": "26:26",
+  "mp3_filename": "episode.mp3",
+  "mp3_size_bytes": 19038921,
+  "word_count": 4979
+}
