@@ -1,22 +1,29 @@
 name: Publish episodes (render + build + deploy)
 
-# When an episode's script.md or post.md lands on main (e.g. a draft
-# branch merges), this workflow runs the whole publish end-to-end so
-# that merging the episode PR is the only manual step:
+# Single owner of the GitHub Pages deploy. When an episode's script.md
+# or post.md lands on main (e.g. a draft branch merges) — or when the
+# site template / docs change — this workflow runs the whole publish
+# end-to-end so that merging the PR is the only manual step:
 #
 #   1. render any new or changed episode to episode.mp3 + episode.json
-#      — this installs Piper and downloads the voice model. GitHub
-#      runners have open outbound network, so the model download that
-#      is blocked in restricted/sandboxed environments works here;
+#      (installs Piper and downloads the voice model — GitHub runners
+#      have open network, so the model download that is blocked in
+#      restricted/sandboxed environments works here);
 #   2. rebuild the site into docs/;
 #   3. ensure the episode's "comment on GitHub" labels exist;
-#   4. deploy docs/ to GitHub Pages;
-#   5. commit the rendered audio + docs/ back to main for persistence
-#      (so unchanged episodes are not re-rendered on later runs).
+#   4. commit the rendered audio + docs/ back to main FIRST, so a flaky
+#      Pages deploy can never lose the render (a re-run then skips the
+#      ~10-minute render and just re-deploys);
+#   5. deploy docs/ to GitHub Pages.
+#
+# This is the ONLY workflow that deploys Pages. An earlier pages.yml
+# also deployed on docs changes; running two deployers meant a single
+# push could trigger both and race to deploy the same commit SHA, which
+# GitHub Pages rejects with "Deployment failed, try again later." That
+# workflow has been removed in favour of this one.
 #
 # Commits pushed by the built-in GITHUB_TOKEN do not retrigger
-# workflows, so this job does the Pages deploy itself rather than
-# relying on pages.yml being re-fired by the commit in step 5.
+# workflows, so the commit-back in step 4 does not cause a loop.
 
 on:
   push:
@@ -26,6 +33,7 @@ on:
       - "episodes/**/post.md"
       - "scripts/generate.py"
       - "scripts/build_site.py"
+      - "docs/**"
       - ".github/workflows/publish.yml"
   workflow_dispatch:
     inputs:
@@ -40,8 +48,6 @@ permissions:
   id-token: write   # OIDC token for deploy-pages
   issues: write     # ensure_labels.py creates comment labels
 
-# Share the Pages deploy lock with pages.yml so the two never deploy
-# concurrently.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -128,13 +134,6 @@ jobs:
             echo "No rendered episodes yet."
           fi
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-      - id: deployment
-        uses: actions/deploy-pages@v4
-
       - name: Commit rendered audio and site back to main
         run: |
           set -euo pipefail
@@ -147,5 +146,15 @@ jobs:
             echo "Nothing to commit."
           else
             git commit -m "Publish: render audio + build site [skip ci]"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}" || {
+              git pull --rebase origin "${GITHUB_REF_NAME}"
+              git push origin "HEAD:${GITHUB_REF_NAME}"
+            }
           fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deployment
+        uses: actions/deploy-pages@v4
