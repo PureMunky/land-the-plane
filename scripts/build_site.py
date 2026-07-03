@@ -67,7 +67,7 @@ SHOW = {
     ),
     "language": "en-us",
     "author": "Land the Plane",
-    "email": "noreply@example.com",  # iTunes requires a value here
+    "email": "phil@philcorbett.net",  # iTunes requires a value here
     "category": "Technology",
     "explicit": "false",
     "copyright": f"© {datetime.now(timezone.utc).year} Land the Plane",
