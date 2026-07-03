@@ -1,9 +1,11 @@
 name: Deploy site to GitHub Pages
 
-# Publishes the contents of docs/ to GitHub Pages whenever it changes
-# on the default branch. Audio rendering happens locally (it needs the
-# Piper voice model and would slow CI down for no benefit) — the
-# committed docs/ folder is the deploy artifact.
+# Publishes the contents of docs/ to GitHub Pages whenever docs/ changes
+# directly on the default branch — e.g. a site-template or styling tweak
+# that doesn't touch an episode. The end-to-end episode flow (render →
+# build → deploy) is handled by publish.yml, which triggers on episode
+# script/post changes and does its own Pages deploy; this workflow covers
+# the docs-only case.
 
 on:
   push:

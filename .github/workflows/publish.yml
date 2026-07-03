@@ -1,0 +1,151 @@
+name: Publish episodes (render + build + deploy)
+
+# When an episode's script.md or post.md lands on main (e.g. a draft
+# branch merges), this workflow runs the whole publish end-to-end so
+# that merging the episode PR is the only manual step:
+#
+#   1. render any new or changed episode to episode.mp3 + episode.json
+#      — this installs Piper and downloads the voice model. GitHub
+#      runners have open outbound network, so the model download that
+#      is blocked in restricted/sandboxed environments works here;
+#   2. rebuild the site into docs/;
+#   3. ensure the episode's "comment on GitHub" labels exist;
+#   4. deploy docs/ to GitHub Pages;
+#   5. commit the rendered audio + docs/ back to main for persistence
+#      (so unchanged episodes are not re-rendered on later runs).
+#
+# Commits pushed by the built-in GITHUB_TOKEN do not retrigger
+# workflows, so this job does the Pages deploy itself rather than
+# relying on pages.yml being re-fired by the commit in step 5.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "episodes/**/script.md"
+      - "episodes/**/post.md"
+      - "scripts/generate.py"
+      - "scripts/build_site.py"
+      - ".github/workflows/publish.yml"
+  workflow_dispatch:
+    inputs:
+      force_all:
+        description: "Re-render every episode, even if audio already exists"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # commit rendered audio + docs/ back to main
+  pages: write      # deploy to GitHub Pages
+  id-token: write   # OIDC token for deploy-pages
+  issues: write     # ensure_labels.py creates comment labels
+
+# Share the Pages deploy lock with pages.yml so the two never deploy
+# concurrently.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # need history to diff before/after and to push
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install system deps (ffmpeg for the MP3 encode)
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+
+      - name: Cache Piper voice model
+        uses: actions/cache@v4
+        with:
+          path: voices
+          key: piper-voice-${{ hashFiles('scripts/install_voice.sh') }}
+
+      - name: Install voice model
+        run: bash scripts/install_voice.sh
+
+      - name: Render new or changed episodes
+        env:
+          FORCE_ALL: ${{ github.event.inputs.force_all }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          # Episodes whose script.md changed in this push. On a first
+          # push, a manual dispatch, or a missing base commit, this is
+          # empty and we fall back to "render whatever is missing".
+          changed=""
+          if [ "${FORCE_ALL:-}" != "true" ] \
+             && [ -n "${BEFORE:-}" ] \
+             && git rev-parse --quiet --verify "${BEFORE}^{commit}" >/dev/null 2>&1; then
+            changed=$(git diff --name-only "$BEFORE" "$AFTER" -- 'episodes/*/script.md' || true)
+          fi
+
+          rendered=0
+          for script in episodes/*/script.md; do
+            [ -e "$script" ] || continue
+            dir=$(dirname "$script")
+            need=0
+            [ "${FORCE_ALL:-}" = "true" ] && need=1
+            { [ ! -f "$dir/episode.mp3" ] || [ ! -f "$dir/episode.json" ]; } && need=1
+            printf '%s\n' "$changed" | grep -qxF "$script" && need=1
+            if [ "$need" = "1" ]; then
+              echo "==> Rendering $dir"
+              python3 scripts/generate.py "$script"
+              rendered=$((rendered + 1))
+            else
+              echo "==> Skipping $dir (audio present, script unchanged)"
+            fi
+          done
+          echo "Rendered $rendered episode(s)."
+
+      - name: Build site
+        run: python3 scripts/build_site.py
+
+      - name: Ensure episode comment labels
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          shopt -s nullglob
+          metas=(episodes/*/episode.json)
+          if [ ${#metas[@]} -gt 0 ]; then
+            python3 scripts/ensure_labels.py "${metas[@]}" \
+              || echo "label step failed (non-fatal)"
+          else
+            echo "No rendered episodes yet."
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Commit rendered audio and site back to main
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # segments/*.wav and episode.wav are gitignored; this only
+          # stages episode.mp3, episode.json, and the regenerated docs/.
+          git add docs episodes
+          if git diff --cached --quiet; then
+            echo "Nothing to commit."
+          else
+            git commit -m "Publish: render audio + build site [skip ci]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
