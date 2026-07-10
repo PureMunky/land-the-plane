@@ -4,9 +4,15 @@ voices/*.onnx.json
 voices/MODEL_CARD
 voices/*.tar.gz
 
+# Distribution audio now lives in GitHub Releases (one release per
+# episode, tagged ep-NNN), NOT in git — this keeps large binaries out of
+# history and off GitHub Pages. The render pipeline uploads episode.mp3
+# to its release; build_site.py points the feed/pages at the release URL.
+episodes/*/episode.mp3
+docs/episodes/*/episode.mp3
+
 # Per-paragraph intermediate WAVs — kept on disk for incremental re-rendering
-# but not worth versioning. The final episode.mp3 (committed) is the
-# distribution artifact.
+# but not worth versioning.
 episodes/*/segments/
 
 # Uncompressed intermediate audio. The MP3 in the same directory is what

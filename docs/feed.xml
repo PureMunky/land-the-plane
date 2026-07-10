@@ -10,7 +10,7 @@
     <language>en-us</language>
     <copyright>© 2026 Land the Plane</copyright>
     <description>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</description>
-    <lastBuildDate>Fri, 03 Jul 2026 16:31:02 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 10 Jul 2026 13:48:57 +0000</lastBuildDate>
     <itunes:author>Land the Plane</itunes:author>
     <itunes:summary>A weekly half-hour about software engineering, AI-assisted development, and engineering leadership. Each episode pairs a current-events segment with one longer essay-style argument and one or two things you can actually do this week. Experimental: every episode is researched, drafted, and audio-rendered end-to-end through an AI pipeline, with a synthetic voice (Piper TTS). Treat episodes as working drafts.</itunes:summary>
     <itunes:owner>
@@ -362,7 +362,7 @@ why, and when the machine asks if this is what you meant, <em>answer.</em></p>
 <li>Verification vs. validation — https://www.scrum.org/resources/blog/doing-right-thing-right-validation-and-verification
 </content></li>
 </ul>]]></content:encoded>
-      <enclosure url="https://puremunky.github.io/land-the-plane/episodes/006-cleared-to-land/episode.mp3" length="19038921" type="audio/mpeg"/>
+      <enclosure url="https://github.com/puremunky/land-the-plane/releases/download/ep-006/episode.mp3" length="19038921" type="audio/mpeg"/>
       <itunes:duration>26:26</itunes:duration>
       <itunes:explicit>false</itunes:explicit>
       <itunes:author>Land the Plane</itunes:author>
@@ -755,7 +755,7 @@ to the gate.</p>
 <li>Simon Willison — &ldquo;Vibe engineering&rdquo; (Oct 7, 2025) — https://simonwillison.net/2025/Oct/7/vibe-engineering/</li>
 <li>Simon Willison — &ldquo;Vibe coding&rdquo; / the golden rule (Mar 19, 2025) — https://simonwillison.net/2025/Mar/19/vibe-coding/</li>
 </ul>]]></content:encoded>
-      <enclosure url="https://puremunky.github.io/land-the-plane/episodes/005-four-day-build/episode.mp3" length="19756766" type="audio/mpeg"/>
+      <enclosure url="https://github.com/puremunky/land-the-plane/releases/download/ep-005/episode.mp3" length="19756766" type="audio/mpeg"/>
       <itunes:duration>27:26</itunes:duration>
       <itunes:explicit>false</itunes:explicit>
       <itunes:author>Land the Plane</itunes:author>
@@ -1116,7 +1116,7 @@ first. The whole sky is waiting on you to know where it&rsquo;s going.</p>
 <li>Microsoft Research, &ldquo;Intent Formalization: A Grand Challenge…&rdquo; (Lahiri) — https://www.microsoft.com/en-us/research/publication/intent-formalization-a-grand-challenge-for-reliable-coding-in-the-age-of-ai-agents/</li>
 <li>Intent Formalization (paper) — https://arxiv.org/pdf/2603.17150</li>
 </ul>]]></content:encoded>
-      <enclosure url="https://puremunky.github.io/land-the-plane/episodes/004-verification-bottleneck/episode.mp3" length="19547996" type="audio/mpeg"/>
+      <enclosure url="https://github.com/puremunky/land-the-plane/releases/download/ep-004/episode.mp3" length="19547996" type="audio/mpeg"/>
       <itunes:duration>27:09</itunes:duration>
       <itunes:explicit>false</itunes:explicit>
       <itunes:author>Land the Plane</itunes:author>
@@ -1459,7 +1459,7 @@ understand it before it lands, and be brave enough to say when you don&rsquo;t.<
 <li>Graphite, &ldquo;The ancient origins of code review&rdquo; (Fagan inspections) — https://graphite.com/blog/the-ancient-origins-of-code-review</li>
 <li>Analyst&rsquo;s Corner, &ldquo;Code Reviews: Rubber Stamps or Real Quality Gates&rdquo; — https://medium.com/analysts-corner/code-reviews-rubber-stamps-%EF%B8%8F-or-real-quality-gates-dab98cca0a81</li>
 </ul>]]></content:encoded>
-      <enclosure url="https://puremunky.github.io/land-the-plane/episodes/003-new-code-review/episode.mp3" length="18820120" type="audio/mpeg"/>
+      <enclosure url="https://github.com/puremunky/land-the-plane/releases/download/ep-003/episode.mp3" length="18820120" type="audio/mpeg"/>
       <itunes:duration>26:08</itunes:duration>
       <itunes:explicit>false</itunes:explicit>
       <itunes:author>Land the Plane</itunes:author>
@@ -1820,7 +1820,7 @@ with somebody.</p>
 <li>Psychological detachment study (PMC): <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7596587/">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7596587/</a></li>
 <li>SHRM on sabbaticals and burnout: <a href="https://www.shrm.org/topics-tools/news/benefits-compensation/sabbaticals-solution-to-employee-burnout">https://www.shrm.org/topics-tools/news/benefits-compensation/sabbaticals-solution-to-employee-burnout</a></li>
 </ul>]]></content:encoded>
-      <enclosure url="https://puremunky.github.io/land-the-plane/episodes/002-invest-in-people/episode.mp3" length="17822347" type="audio/mpeg"/>
+      <enclosure url="https://github.com/puremunky/land-the-plane/releases/download/ep-002/episode.mp3" length="17822347" type="audio/mpeg"/>
       <itunes:duration>24:45</itunes:duration>
       <itunes:explicit>false</itunes:explicit>
       <itunes:author>Land the Plane</itunes:author>
@@ -2240,7 +2240,7 @@ widest it&rsquo;s ever been.</p>
 <li>Mike Hadlow, &ldquo;Coconut Headphones: Why Agile Has Failed&rdquo; (2014): <a href="http://mikehadlow.blogspot.com/2014/03/coconut-headphones-why-agile-has-failed.html">http://mikehadlow.blogspot.com/2014/03/coconut-headphones-why-agile-has-failed.html</a></li>
 <li>John Frum movement background: <a href="https://en.wikipedia.org/wiki/John_Frum">https://en.wikipedia.org/wiki/John_Frum</a></li>
 </ul>]]></content:encoded>
-      <enclosure url="https://puremunky.github.io/land-the-plane/episodes/001-intent-layer/episode.mp3" length="19798144" type="audio/mpeg"/>
+      <enclosure url="https://github.com/puremunky/land-the-plane/releases/download/ep-001/episode.mp3" length="19798144" type="audio/mpeg"/>
       <itunes:duration>27:30</itunes:duration>
       <itunes:explicit>false</itunes:explicit>
       <itunes:author>Land the Plane</itunes:author>
