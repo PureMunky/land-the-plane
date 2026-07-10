@@ -1,0 +1,24 @@
+name: Migrate audio to Releases (one-time)
+
+# Manual, one-time helper for the "host audio in GitHub Releases" cutover.
+# Run this from the Actions tab (Run workflow) while the episode MP3s are
+# still committed — it uploads each episodes/NNN-slug/episode.mp3 to a
+# release tagged ep-NNN, so the feed URLs resolve the moment the cutover
+# lands. Idempotent; safe to re-run. Once the back catalogue has releases
+# and the cutover is merged, this workflow can be deleted.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write   # create releases and upload assets
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Upload committed episode audio to Releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/migrate_audio_to_releases.sh
