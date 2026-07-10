@@ -12,11 +12,13 @@ This script emits:
     docs/style.css                        shared stylesheet
     docs/feed.xml                         podcast-format RSS feed
     docs/episodes/NNN-slug/index.html     blog post page (per episode)
-    docs/episodes/NNN-slug/episode.mp3    copy of the audio (for hosting)
 
 The site is designed to be served by GitHub Pages from the docs/ folder
 on the default branch. Set BASE_URL via environment to override the
-absolute URL used in the RSS enclosures.
+absolute URL used for site links, and MEDIA_BASE_URL to override where
+the MP3 enclosures are hosted. The audio itself is NOT copied into
+docs/ — it lives in GitHub Releases (or, later, a CDN), keeping large
+binaries out of git and off Pages.
 """
 from __future__ import annotations
 
@@ -24,7 +26,6 @@ import html
 import json
 import os
 import re
-import shutil
 import sys
 from datetime import datetime, timezone
 from email.utils import format_datetime
@@ -45,6 +46,29 @@ GITHUB_REPO = "puremunky/land-the-plane"
 BASE_URL = os.environ.get(
     "BASE_URL", "https://puremunky.github.io/land-the-plane"
 ).rstrip("/")
+
+# Where the audio BYTES live. This is deliberately separate from
+# BASE_URL (which serves the tiny HTML/CSS/RSS from GitHub Pages) so the
+# MP3s can be hosted somewhere built for media without touching the feed
+# we own. The default is one GitHub Release per episode, tagged ep-NNN
+# with an asset named episode.mp3 — this keeps large binaries out of git
+# history and off Pages. To move to a CDN later (e.g. a Cloudflare R2
+# custom domain) swap this ONE value; nothing else changes.
+MEDIA_BASE_URL = os.environ.get(
+    "MEDIA_BASE_URL", f"https://github.com/{GITHUB_REPO}/releases/download"
+).rstrip("/")
+
+
+def audio_url_for(ep: dict) -> str:
+    """Absolute URL to an episode's MP3 enclosure.
+
+    A per-episode `audio_url` in episode.json wins (useful once media
+    moves to a CDN with arbitrary paths); otherwise derive the Release
+    asset URL from the episode number.
+    """
+    if ep.get("audio_url"):
+        return ep["audio_url"]
+    return f"{MEDIA_BASE_URL}/ep-{ep.get('number', 0):03d}/episode.mp3"
 
 SHOW = {
     "title": "Land the Plane",
@@ -319,9 +343,10 @@ def render_episode_page(ep: dict) -> str:
         md_text,
         extensions=["extra", "smarty", "sane_lists"],
     )
-    audio_url = f"./episode.mp3"
+    audio_url = audio_url_for(ep)
     audio_block = (
-        f'<audio controls preload="metadata" src="{audio_url}"></audio>'
+        f'<audio controls preload="metadata" '
+        f'src="{html.escape(audio_url)}"></audio>'
     )
     article = f"""
 <p class="episode-meta">Episode {ep.get('number', 0):03d} ·
@@ -360,7 +385,7 @@ def render_rss(episodes: list[dict]) -> str:
             pub_rfc = now
 
         ep_url = f"{BASE_URL}/episodes/{ep['slug']}/"
-        mp3_url = f"{BASE_URL}/episodes/{ep['slug']}/episode.mp3"
+        mp3_url = audio_url_for(ep)
         size = ep.get("mp3_size_bytes", 0)
         duration_s = ep.get("duration_seconds", 0)
         hours = duration_s // 3600
@@ -445,12 +470,9 @@ def main() -> int:
         out_dir = DOCS_DIR / "episodes" / ep["slug"]
         out_dir.mkdir(parents=True, exist_ok=True)
 
-        # Copy the MP3 if it's newer or missing.
-        src_mp3 = ep["_mp3_path"]
-        dst_mp3 = out_dir / "episode.mp3"
-        if not dst_mp3.exists() or src_mp3.stat().st_mtime > dst_mp3.stat().st_mtime:
-            shutil.copyfile(src_mp3, dst_mp3)
-            print(f"  copied {src_mp3.name} -> {dst_mp3.relative_to(ROOT)}")
+        # The audio is NOT copied into docs/ — it's hosted in GitHub
+        # Releases (see audio_url_for). This keeps large binaries out of
+        # git history and off GitHub Pages.
 
         # Render the per-episode page.
         if not ep["_post_path"].exists():

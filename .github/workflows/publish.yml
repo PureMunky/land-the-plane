@@ -5,15 +5,17 @@ name: Publish episodes (render + build + deploy)
 # site template / docs change — this workflow runs the whole publish
 # end-to-end so that merging the PR is the only manual step:
 #
-#   1. render any new or changed episode to episode.mp3 + episode.json
-#      (installs Piper and downloads the voice model — GitHub runners
-#      have open network, so the model download that is blocked in
-#      restricted/sandboxed environments works here);
-#   2. rebuild the site into docs/;
+#   1. render any new or changed episode, then upload its episode.mp3 as
+#      a GitHub Release asset (tag ep-NNN). Audio is NOT stored in git or
+#      served from Pages — build_site.py points the feed/pages at the
+#      Release URL. (Installs Piper and downloads the voice model; GitHub
+#      runners have open network, so the model download that is blocked
+#      in restricted/sandboxed environments works here.);
+#   2. rebuild the site into docs/ (small HTML/CSS/RSS only, no audio);
 #   3. ensure the episode's "comment on GitHub" labels exist;
-#   4. commit the rendered audio + docs/ back to main FIRST, so a flaky
-#      Pages deploy can never lose the render (a re-run then skips the
-#      ~10-minute render and just re-deploys);
+#   4. commit episode.json + docs/ back to main FIRST, so a flaky Pages
+#      deploy can never lose the render's metadata (a re-run sees the
+#      Release asset already present and skips the ~10-minute render);
 #   5. deploy docs/ to GitHub Pages.
 #
 # This is the ONLY workflow that deploys Pages. An earlier pages.yml
@@ -82,17 +84,21 @@ jobs:
       - name: Install voice model
         run: bash scripts/install_voice.sh
 
-      - name: Render new or changed episodes
+      - name: Render new or changed episodes and publish audio to Releases
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FORCE_ALL: ${{ github.event.inputs.force_all }}
           BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.sha }}
         run: |
           set -euo pipefail
 
-          # Episodes whose script.md changed in this push. On a first
-          # push, a manual dispatch, or a missing base commit, this is
-          # empty and we fall back to "render whatever is missing".
+          # Audio is NOT stored in git — each episode's MP3 lives as a
+          # GitHub Release asset (tag ep-NNN, asset episode.mp3). So the
+          # "already published?" signal is the Release asset, not a local
+          # file. We render an episode when it is forced, its script
+          # changed in this push, or its Release asset does not exist yet
+          # (e.g. a brand-new episode, or a back catalogue not migrated).
           changed=""
           if [ "${FORCE_ALL:-}" != "true" ] \
              && [ -n "${BEFORE:-}" ] \
@@ -100,23 +106,47 @@ jobs:
             changed=$(git diff --name-only "$BEFORE" "$AFTER" -- 'episodes/*/script.md' || true)
           fi
 
-          rendered=0
+          published=0
           for script in episodes/*/script.md; do
             [ -e "$script" ] || continue
             dir=$(dirname "$script")
+            slug=$(basename "$dir")
+            num="${slug%%-*}"
+            tag="ep-$num"
+
+            asset_present=no
+            gh release view "$tag" --json assets -q '.assets[].name' 2>/dev/null \
+              | grep -qx episode.mp3 && asset_present=yes
+
             need=0
             [ "${FORCE_ALL:-}" = "true" ] && need=1
-            { [ ! -f "$dir/episode.mp3" ] || [ ! -f "$dir/episode.json" ]; } && need=1
+            [ "$asset_present" = "no" ] && need=1
             printf '%s\n' "$changed" | grep -qxF "$script" && need=1
-            if [ "$need" = "1" ]; then
-              echo "==> Rendering $dir"
-              python3 scripts/generate.py "$script"
-              rendered=$((rendered + 1))
-            else
-              echo "==> Skipping $dir (audio present, script unchanged)"
+
+            if [ "$need" != "1" ]; then
+              echo "==> Skipping $slug (release asset present, script unchanged)"
+              continue
             fi
+
+            echo "==> Rendering $slug"
+            python3 scripts/generate.py "$script"
+
+            title="Episode $num"
+            if [ -f "$dir/episode.json" ]; then
+              t=$(python3 -c "import json;print(json.load(open('$dir/episode.json')).get('title',''))")
+              [ -n "$t" ] && title="Episode $num — $t"
+            fi
+
+            if gh release view "$tag" >/dev/null 2>&1; then
+              gh release upload "$tag" "$dir/episode.mp3#episode.mp3" --clobber
+            else
+              gh release create "$tag" "$dir/episode.mp3#episode.mp3" \
+                --title "$title" \
+                --notes "Audio enclosure for $slug, hosted as a Release asset."
+            fi
+            published=$((published + 1))
           done
-          echo "Rendered $rendered episode(s)."
+          echo "Rendered/published $published episode(s) to Releases."
 
       - name: Build site
         run: python3 scripts/build_site.py
@@ -139,8 +169,9 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # segments/*.wav and episode.wav are gitignored; this only
-          # stages episode.mp3, episode.json, and the regenerated docs/.
+          # Audio (episode.mp3), segments/*.wav and episode.wav are
+          # gitignored; this stages only episode.json and the regenerated
+          # docs/ (HTML/CSS/RSS). No binaries enter git history.
           git add docs episodes
           if git diff --cached --quiet; then
             echo "Nothing to commit."
